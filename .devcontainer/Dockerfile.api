@@ -1,0 +1,43 @@
+FROM mcr.microsoft.com/devcontainers/go:1
+
+USER root
+
+# Create vscode user if it doesn't exist
+RUN id -u vscode 2>/dev/null || useradd -m -s /bin/bash vscode
+
+# Set GOPATH and GOBIN early so they're available for subsequent commands
+ENV GOPATH=/root/go
+ENV GOBIN=$GOPATH/bin
+ENV PATH=$GOBIN:$PATH
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    gnupg \
+    build-essential \
+    git \
+    procps \
+    bash \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js LTS for possible frontend tooling from the api container
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+  && apt-get install -y nodejs \
+  && npm --version \
+  && corepack enable || true
+
+# Install air and common Go tools at image build time
+RUN go install github.com/cosmtrek/air@latest || true
+RUN go install golang.org/x/tools/gopls@latest || true
+RUN go install github.com/go-delve/delve/cmd/dlv@latest || true
+
+# Ensure installed Go binaries are reachable at a stable location used by overrides
+RUN mkdir -p "$GOBIN" \
+  && if [ -f "$GOBIN/air" ]; then ln -sf "$GOBIN/air" /usr/local/bin/air; fi || true
+RUN if [ -f "$GOBIN/dlv" ]; then ln -sf "$GOBIN/dlv" /usr/local/bin/dlv; fi || true
+
+WORKDIR /workspace
+
+CMD ["/bin/bash"]
+
+CMD ["/bin/sh", "-c", "air"]

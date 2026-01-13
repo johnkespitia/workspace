@@ -1,0 +1,41 @@
+# Binarios compilados
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/bin/
+/dist/
+
+# Archivos de test
+*.test
+*.prof
+
+# Dependencias de Go
+/vendor/
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración local
+.env
+.env.local
+*.local
+
+# Logs
+*.log
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp

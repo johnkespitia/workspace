@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/devcontainers/javascript-node:18
+
+USER root
+
+# Create vscode user if it doesn't exist
+RUN id -u vscode 2>/dev/null || useradd -m -s /bin/bash vscode
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  git \
+  curl \
+  ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace/frontend
+ENV PATH=/workspace/frontend/node_modules/.bin:$PATH
+RUN corepack enable || true
+
+# Install TypeScript globally for better IDE support
+RUN npm install -g typescript@latest
+
+CMD ["/bin/sh", "-c", "npm install --silent || true && npm run dev"]

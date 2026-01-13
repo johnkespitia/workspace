@@ -1,0 +1,63 @@
+{
+  "name": "Go + Vue 3 Dev Container",
+  "dockerComposeFile": ["docker-compose.yml"],
+  "service": "api",
+  "runServices": ["api", "frontend", "cockroachdb"],
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.Go",
+        "Vue.volar",
+        "Vue.vscode-typescript-vue-plugin",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-typescript-next",
+        "eg2.vscode-npm-script"
+      ],
+      "settings": {
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "typescript.enablePromptUseWorkspaceTsdk": true,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[vue]": {
+          "editor.defaultFormatter": "Vue.volar"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
+    }
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "forwardPorts": [3000, 8080, 26257],
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend (Vue 3)",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "Backend (Go API)",
+      "onAutoForward": "notify"
+    },
+    "26257": {
+      "label": "CockroachDB",
+      "onAutoForward": "silent"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+  "containerUser": "root",
+  "overrideCommand": false,
+  "remoteEnv": {
+    "DATABASE_URL": "postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable",
+    "COCKROACH_HOST": "cockroachdb",
+    "COCKROACH_PORT": "26257",
+    "COCKROACH_USER": "root",
+    "COCKROACH_DB": "defaultdb"
+  }
+}

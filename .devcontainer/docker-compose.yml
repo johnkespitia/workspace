@@ -1,0 +1,59 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    volumes:
+      - ..:/workspace:cached
+    working_dir: /workspace
+    command: ["sleep", "infinity"]
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DATABASE_URL=postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
+      - COCKROACH_HOST=cockroachdb
+      - COCKROACH_PORT=26257
+      - COCKROACH_USER=root
+      - COCKROACH_DB=defaultdb
+    depends_on:
+      - cockroachdb
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    volumes:
+      - ..:/workspace:cached
+    working_dir: /workspace/frontend
+    ports:
+      - "3000:3000"
+    command: ["npm", "run", "dev"]
+    networks:
+      - app-network
+
+  cockroachdb:
+    image: cockroachdb/cockroach:latest-v23.1
+    container_name: cockroachdb
+    command: start-single-node --insecure --http-addr=:8080
+    ports:
+      - "26257:26257"
+      - "8081:8080"
+    volumes:
+      - cockroach-data:/cockroach/cockroach-data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  cockroach-data:
+
+networks:
+  app-network:
+    driver: bridge
