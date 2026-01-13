@@ -1,0 +1,307 @@
+# Resumen Ejecutivo - Sistema de Información de Acciones
+
+## 🎯 Objetivo del Proyecto
+
+Desarrollar un sistema completo que recupere información de acciones desde una API externa, la almacene en CockroachDB, y la presente a través de una interfaz web moderna con capacidades de búsqueda, ordenamiento y recomendaciones inteligentes.
+
+---
+
+## 📋 Alcance del Proyecto
+
+### Funcionalidades Principales
+
+1. **Sincronización de Datos**
+   - Conexión a API externa (`api.karenai.click`)
+   - Almacenamiento en CockroachDB
+   - Manejo de paginación
+   - Sincronización periódica
+
+2. **API GraphQL**
+   - Consulta de stocks
+   - Búsqueda y filtrado
+   - Recomendaciones de inversión
+   - Mutaciones para sincronización
+
+3. **Interfaz de Usuario**
+   - Lista de acciones con tabla interactiva
+   - Búsqueda en tiempo real
+   - Ordenamiento por columnas
+   - Vista de recomendaciones
+   - Sistema de temas (light/dark)
+   - Accesibilidad completa
+
+4. **Algoritmo de Recomendación**
+   - Análisis de cambios en precio objetivo
+   - Evaluación de ratings
+   - Score de recomendación
+   - Top N acciones recomendadas
+
+---
+
+## 🏗️ Arquitectura
+
+### Backend (Go + GraphQL + DDD)
+
+**Patrón**: Domain-Driven Design (DDD)
+
+**Capas**:
+- **Domain**: Entidades, Value Objects, Interfaces
+- **Application**: Servicios, DTOs, Casos de uso
+- **Infrastructure**: Repositorios, Clientes HTTP, Base de datos
+- **Presentation**: Handlers GraphQL, HTTP
+
+**Tecnologías**:
+- Go 1.21+
+- GraphQL (gqlgen o graphql-go)
+- CockroachDB (PostgreSQL compatible)
+- Swagger para documentación
+
+### Frontend (Vue 3 + TypeScript)
+
+**Patrón**: Component-Based Architecture con HOCs
+
+**Estructura**:
+- **Design System**: Componentes reusables documentados en Storybook
+- **HOCs**: Separación de lógica de negocio
+- **Composables**: Lógica reutilizable
+- **Stores (Pinia)**: Estado global
+
+**Tecnologías**:
+- Vue 3 (Composition API)
+- TypeScript
+- Pinia (State Management)
+- Apollo Client / urql (GraphQL)
+- Tailwind CSS
+- Storybook
+
+---
+
+## 📊 Algoritmos y Complejidad
+
+### Algoritmo de Recomendación
+- **Complejidad**: O(n log n)
+- **Estrategia**: Filtrado → Cálculo de scores → Ordenamiento → Top N
+- **Factores**: Cambio de precio (50%), Rating (30%), Acción (20%)
+
+### Búsqueda
+- **Complejidad**: O(log n) con índices DB
+- **Optimización**: Índices en ticker, company_name, rating
+
+### Sincronización
+- **Complejidad**: O(n) donde n = total de registros
+- **Optimización**: Batch upsert, paginación eficiente
+
+### Frontend Optimizations
+- **Debounce**: O(1) por llamada
+- **Cache**: O(1) lookup
+- **Request Deduplication**: O(1) con Map
+- **Virtual Scrolling**: O(visible_items)
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+workspace/
+├── api/                          # Backend Go
+│   ├── cmd/                      # Punto de entrada
+│   ├── internal/
+│   │   ├── domain/              # Capa de dominio (DDD)
+│   │   ├── application/         # Capa de aplicación
+│   │   └── infrastructure/      # Capa de infraestructura
+│   └── docs/                    # Documentación API
+├── frontend/                     # Frontend Vue 3
+│   ├── src/
+│   │   ├── design-system/       # Componentes reusables
+│   │   ├── hoc/                 # Higher Order Components
+│   │   ├── views/               # Vistas/páginas
+│   │   ├── stores/              # Pinia stores
+│   │   └── composables/         # Composables Vue
+│   └── .storybook/              # Storybook config
+└── docs/                         # Documentación general
+    ├── ARCHITECTURE.md
+    ├── ALGORITHMS.md
+    └── RESUMEN_EJECUTIVO.md
+```
+
+---
+
+## 🚀 Fases de Implementación
+
+### Fase 1: Backend - Infraestructura 
+- Base de datos y migraciones
+- Entidades de dominio
+- Cliente API externa
+
+### Fase 2: Backend - GraphQL API 
+- Schema GraphQL
+- Resolvers
+- Servicios de aplicación
+
+### Fase 3: Backend - Documentación 
+- Swagger
+- Tests unitarios
+
+### Fase 4: Frontend - Design System 
+- Storybook
+- Componentes base
+- Temas
+
+### Fase 5: Frontend - HOCs y Lógica 
+- Higher Order Components
+- Composables
+- Optimizaciones
+
+### Fase 6: Frontend - Vistas 
+- Lista de acciones
+- Detalle
+- Recomendaciones
+
+### Fase 7: Optimización 
+- Performance
+- Tests
+- Documentación final
+
+
+---
+
+## 🎨 Design System
+
+### Componentes Base
+- **Button**: Variantes, estados, accesibilidad
+- **Input**: Búsqueda, validación
+- **Table**: Ordenamiento, paginación
+- **Card**: Variantes, estados
+- **ThemeToggle**: Cambio de tema
+
+### Temas
+- **Light Theme**: Colores claros, alto contraste
+- **Dark Theme**: Colores oscuros, fácil lectura
+- **Tokens**: Colores, espaciado, tipografía
+
+### Accesibilidad
+- ARIA labels
+- Navegación por teclado
+- WCAG AA compliance
+- Screen reader support
+
+---
+
+## 🔒 Seguridad
+
+- API Key en variables de entorno
+- Prepared statements (SQL injection prevention)
+- CORS configurado
+- Input validation
+- Rate limiting
+
+---
+
+## 📈 Métricas de Éxito
+
+### Performance
+- Carga inicial: < 2s
+- Búsqueda: < 300ms
+- API response: < 500ms
+
+### Accesibilidad
+- Lighthouse score: > 90
+- WCAG AA compliance
+- Keyboard navigation completa
+
+### Código
+- Test coverage: > 70%
+- Documentación completa
+- Código desacoplado
+
+---
+
+## 🛠️ Stack Tecnológico Completo
+
+### Backend
+- Go 1.21+
+- GraphQL (gqlgen)
+- CockroachDB
+- Swagger/OpenAPI
+- Testing (testify)
+
+### Frontend
+- Vue 3 (Composition API)
+- TypeScript
+- Pinia
+- Apollo Client / urql
+- Tailwind CSS
+- Storybook
+- Vitest
+
+### DevOps
+- Docker / Dev Containers
+- Hot reload (Air para Go, Vite para Vue)
+- CockroachDB en contenedor
+
+---
+
+## 📚 Documentación
+
+### Documentos Creados
+1. **PLAN_DE_ACCION.md**: Plan detallado por fases
+2. **docs/ARCHITECTURE.md**: Arquitectura DDD y flujos
+3. **docs/ALGORITHMS.md**: Algoritmos y optimizaciones
+4. **docs/RESUMEN_EJECUTIVO.md**: Este documento
+
+### Documentación a Crear
+- Swagger/OpenAPI specs
+- GraphQL schema documentation
+- Storybook stories
+- README actualizado
+- Guías de desarrollo
+
+---
+
+## ✅ Checklist de Inicio
+
+- [x] Plan de acción creado
+- [x] Arquitectura definida
+- [x] Algoritmos documentados
+- [ ] Estructura de carpetas creada
+- [ ] Base de datos configurada
+- [ ] API externa conectada
+- [ ] GraphQL implementado
+- [ ] Design System creado
+- [ ] Frontend integrado
+- [ ] Tests escritos
+- [ ] Documentación completa
+
+---
+
+## 🎯 Próximos Pasos Inmediatos
+
+1. **Crear estructura de carpetas** según arquitectura DDD
+2. **Configurar base de datos** y crear migraciones
+3. **Implementar cliente API externa** con paginación
+4. **Crear entidades de dominio** con validaciones
+5. **Configurar GraphQL** schema y resolvers
+
+---
+
+## 📞 Información de la API Externa
+
+- **Endpoint**: `https://api.karenai.click/swechallenge/list`
+- **Método**: GET
+- **Query Params**: `next_page` (para paginación)
+- **Auth**: Bearer token en header `Authorization`
+- **Formato**: JSON
+
+### Estructura de Datos Esperada
+- TICKER
+- COMPANY
+- BROKERAGE
+- ACTION
+- RATING FROM / RATING TO
+- TARGET FROM / TARGET TO
+
+---
+
+**Estado del Proyecto**: 🟡 Planificación Completa - Listo para Implementación
+
+**Última actualización**: [Fecha]

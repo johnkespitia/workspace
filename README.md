@@ -1,3 +1,32 @@
+# Sistema de Información de Acciones
+
+Sistema completo para recuperar, almacenar y visualizar información de acciones desde una API externa, con recomendaciones inteligentes de inversión.
+
+**Stack**: Go + Vue 3 + GraphQL + CockroachDB + DDD
+
+## 📚 Documentación
+
+- **[Plan de Acción](./PLAN_DE_ACCION.md)**: Plan detallado por fases de implementación
+- **[Arquitectura](./docs/ARCHITECTURE.md)**: Arquitectura DDD, capas y flujos de datos
+- **[Algoritmos](./docs/ALGORITHMS.md)**: Algoritmos de recomendación, búsqueda y optimizaciones
+- **[HOCs en Vue 3](./docs/HOCS_VUE3.md)**: Guía completa de Higher Order Components (NO hooks)
+- **[Flujos del Sistema](./docs/FLUJOS.md)**: Diagramas de flujo de todos los procesos
+- **[Resumen Ejecutivo](./docs/RESUMEN_EJECUTIVO.md)**: Visión general del proyecto
+
+---
+
+## 🎯 Características Principales
+
+- ✅ **Sincronización de Datos**: Conexión a API externa con almacenamiento en CockroachDB
+- ✅ **API GraphQL**: Consultas, búsqueda, filtrado y recomendaciones
+- ✅ **Interfaz Moderna**: Design System con componentes reusables documentados en Storybook
+- ✅ **Temas**: Soporte para light/dark mode
+- ✅ **Accesibilidad**: WCAG AA compliance, navegación por teclado
+- ✅ **Optimización**: Cache, debounce, request deduplication
+- ✅ **Algoritmo de Recomendación**: O(n log n) para identificar mejores acciones
+
+---
+
 # Go + Vue 3 - Stack Tecnológico
 
 Proyecto full-stack con backend en Golang y frontend en Vue 3.
@@ -90,19 +119,41 @@ cockroach start-single-node --insecure --http-addr=localhost:8081
 
 ```
 .
-├── api/                 # Backend en Golang
-│   ├── cmd/
-│   ├── app/
-│   └── repositories/
-├── frontend/            # Frontend en Vue 3
+├── api/                          # Backend en Golang (DDD)
+│   ├── cmd/                      # Punto de entrada
+│   ├── internal/
+│   │   ├── domain/               # Capa de Dominio (DDD)
+│   │   │   ├── stock/            # Entidades y servicios de dominio
+│   │   │   └── recommendation/   # Algoritmo de recomendación
+│   │   ├── application/          # Capa de Aplicación
+│   │   │   ├── handlers/         # GraphQL handlers
+│   │   │   ├── services/         # Servicios de aplicación
+│   │   │   └── graphql/          # Schema y resolvers
+│   │   └── infrastructure/       # Capa de Infraestructura
+│   │       ├── database/         # Conexión a CockroachDB
+│   │       ├── external/         # Cliente API externa
+│   │       └── repository/       # Implementación de repositorios
+│   └── docs/                     # Documentación API (Swagger)
+├── frontend/                     # Frontend en Vue 3
 │   ├── src/
-│   │   ├── stores/      # Stores de Pinia
-│   │   └── App.vue      # Componente principal
-│   └── package.json
-├── .devcontainer/       # Configuración del devcontainer
+│   │   ├── design-system/        # Design System con componentes
+│   │   │   ├── components/       # Componentes reusables
+│   │   │   ├── tokens/           # Design tokens
+│   │   │   └── themes/           # Temas (light/dark)
+│   │   ├── hoc/                  # Higher Order Components
+│   │   ├── views/                # Vistas/páginas
+│   │   ├── stores/               # Stores de Pinia
+│   │   └── composables/          # Composables Vue
+│   └── .storybook/               # Configuración Storybook
+├── docs/                         # Documentación general
+│   ├── ARCHITECTURE.md           # Arquitectura DDD
+│   ├── ALGORITHMS.md             # Algoritmos y optimizaciones
+│   └── RESUMEN_EJECUTIVO.md      # Resumen ejecutivo
+├── .devcontainer/                # Configuración del devcontainer
 │   ├── devcontainer.json
 │   ├── docker-compose.yml
 │   └── README.md
+├── PLAN_DE_ACCION.md             # Plan de acción detallado
 └── README.md
 ```
 
@@ -182,8 +233,42 @@ docker logs <container-id-api>  # Reemplaza con el ID del contenedor
 docker logs <container-id-frontend>  # Reemplaza con el ID del contenedor
 ```
 
+## 🚀 Inicio Rápido
+
+### Desarrollo del Sistema de Acciones
+
+1. **Revisar la documentación**:
+   - Leer [Plan de Acción](./PLAN_DE_ACCION.md) para entender las fases
+   - Revisar [Arquitectura](./docs/ARCHITECTURE.md) para entender la estructura DDD
+   - Consultar [Algoritmos](./docs/ALGORITHMS.md) para entender las optimizaciones
+
+2. **Configurar el entorno**:
+   - El devcontainer ya está configurado con todos los servicios
+   - CockroachDB se inicia automáticamente
+   - Backend y Frontend tienen hot reload
+
+3. **Comenzar implementación**:
+   - Seguir las fases del plan de acción
+   - Empezar por Fase 1: Backend - Infraestructura
+
+### API Externa
+
+El sistema se conecta a:
+- **Endpoint**: `https://api.karenai.click/swechallenge/list`
+- **Auth**: Bearer token (ver documentación)
+- **Paginación**: Usar parámetro `next_page`
+
 ## Características
 
+### Sistema de Acciones
+- Sincronización automática desde API externa
+- Almacenamiento en CockroachDB
+- API GraphQL con queries y mutations
+- Interfaz moderna con Design System
+- Algoritmo de recomendación O(n log n)
+- Optimizaciones de performance (cache, debounce, etc.)
+
+### Demo Actual
 El proyecto incluye una página demo que muestra:
 - Integración entre el frontend Vue 3 y el backend Go
 - Manejo de estado con Pinia
