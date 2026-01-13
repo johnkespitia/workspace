@@ -6,7 +6,7 @@ services:
     volumes:
       - ..:/workspace:cached
     working_dir: /workspace
-    command: ["sleep", "infinity"]
+    command: ["bash", ".devcontainer/start-api.sh"]
     ports:
       - "8080:8080"
     environment:
