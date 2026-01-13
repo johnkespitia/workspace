@@ -52,6 +52,45 @@ Proyecto full-stack con backend en Golang y frontend en Vue 3.
 
 El proyecto incluye un devcontainer configurado con todos los servicios necesarios.
 
+#### Inicializar desde el Host (Makefile)
+
+Puedes inicializar el dev container directamente desde el host usando Make:
+
+```bash
+# Ver todos los comandos disponibles
+make help
+
+# Inicializar el dev container (construye e inicia servicios)
+make dev-init
+
+# Iniciar servicios
+make dev-up
+
+# Ver estado de los servicios
+make dev-status
+
+# Ver logs
+make dev-logs
+
+# Detener servicios
+make dev-down
+```
+
+**Comandos disponibles:**
+- `make dev-init` - Inicializa el dev container (construye e inicia servicios)
+- `make dev-up` - Inicia los servicios
+- `make dev-down` - Detiene los servicios
+- `make dev-rebuild` - Reconstruye las imágenes y reinicia
+- `make dev-logs` - Muestra logs de todos los servicios
+- `make dev-logs-api` - Logs solo del API
+- `make dev-logs-frontend` - Logs solo del Frontend
+- `make dev-status` - Estado de los servicios
+- `make dev-shell` - Abre shell en el contenedor API
+- `make dev-restart` - Reinicia todos los servicios
+- `make dev-health` - Verifica el estado de salud
+
+#### Abrir en VS Code Dev Container
+
 1. **Abrir en Dev Container:**
    - Usa VS Code con la extensión "Dev Containers"
    - Abre la carpeta del proyecto

@@ -28,4 +28,6 @@ Thumbs.db
 # Archivos de configuración local
 .env
 .env.local
+.env.development
+.env.production
 *.local
