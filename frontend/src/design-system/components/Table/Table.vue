@@ -104,24 +104,24 @@ const sortDirection = ref<'asc' | 'desc'>('asc');
 const focusedRowIndex = ref<number | null>(null);
 
 const tableClasses = computed(() => {
-  return 'min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden';
+  return 'min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800';
 });
 
 const headerClasses = computed(() => {
-  return 'px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-700 uppercase tracking-wider';
+  return 'px-6 py-3 bg-gray-50 dark:bg-gray-700 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider';
 });
 
 const cellClasses = computed(() => {
-  return 'px-6 py-4 whitespace-nowrap text-sm text-gray-900';
+  return 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100';
 });
 
 const sortButtonClasses = computed(() => {
-  return 'inline-flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-1';
+  return 'inline-flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded p-1';
 });
 
 const rowClasses = (index: number) => {
-  const base = props.hoverable ? 'hover:bg-gray-50 transition-colors duration-150' : '';
-  const striped = props.striped && index % 2 === 1 ? 'bg-gray-50' : 'bg-white';
+  const base = props.hoverable ? 'hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150' : '';
+  const striped = props.striped && index % 2 === 1 ? 'bg-gray-50 dark:bg-gray-700/50' : 'bg-white dark:bg-gray-800';
   const clickable = props.clickable ? 'cursor-pointer' : '';
   return `${base} ${striped} ${clickable}`;
 };

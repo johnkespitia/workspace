@@ -9,7 +9,7 @@
     <Card v-if="stock" variant="elevated" padding="lg">
       <template #header>
         <div class="flex items-center justify-between">
-          <h1 class="text-3xl font-bold text-gray-900">{{ stock.ticker }}</h1>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{{ stock.ticker }}</h1>
           <span :class="getRatingClass(stock.ratingTo)" class="px-3 py-1 rounded-lg text-sm font-semibold">
             {{ stock.ratingTo || 'N/A' }}
           </span>
@@ -18,54 +18,54 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Compañía</h3>
-          <p class="text-lg text-gray-900">{{ stock.companyName }}</p>
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Compañía</h3>
+          <p class="text-lg text-gray-900 dark:text-gray-100">{{ stock.companyName }}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Brokerage</h3>
-          <p class="text-lg text-gray-900">{{ stock.brokerage || 'N/A' }}</p>
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Brokerage</h3>
+          <p class="text-lg text-gray-900 dark:text-gray-100">{{ stock.brokerage || 'N/A' }}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Rating Anterior</h3>
-          <p class="text-lg text-gray-900">{{ stock.ratingFrom || 'N/A' }}</p>
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Rating Anterior</h3>
+          <p class="text-lg text-gray-900 dark:text-gray-100">{{ stock.ratingFrom || 'N/A' }}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Rating Actual</h3>
-          <p class="text-lg text-gray-900">{{ stock.ratingTo || 'N/A' }}</p>
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Rating Actual</h3>
+          <p class="text-lg text-gray-900 dark:text-gray-100">{{ stock.ratingTo || 'N/A' }}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Target Anterior</h3>
-          <p class="text-lg font-semibold text-gray-900">
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Target Anterior</h3>
+          <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">
             ${{ stock.targetFrom?.toFixed(2) || 'N/A' }}
           </p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Target Actual</h3>
-          <p class="text-lg font-semibold text-indigo-600">
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Target Actual</h3>
+          <p class="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
             ${{ stock.targetTo?.toFixed(2) || 'N/A' }}
           </p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Cambio</h3>
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Cambio</h3>
           <p :class="getChangeClass(calculateChange())" class="text-lg font-semibold">
             {{ calculateChange() > 0 ? '+' : '' }}{{ calculateChange().toFixed(2) }}%
           </p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500 mb-2">Acción</h3>
-          <p class="text-lg text-gray-900">{{ stock.action || 'N/A' }}</p>
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Acción</h3>
+          <p class="text-lg text-gray-900 dark:text-gray-100">{{ stock.action || 'N/A' }}</p>
         </div>
       </div>
 
-      <div class="mt-6 pt-6 border-t border-gray-200">
-        <div class="grid grid-cols-2 gap-4 text-sm text-gray-500">
+      <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div class="grid grid-cols-2 gap-4 text-sm text-gray-500 dark:text-gray-400">
           <div>
             <span class="font-medium">Creado:</span>
             {{ formatDate(stock.createdAt) }}
@@ -86,7 +86,7 @@
 
     <Card v-else variant="elevated" padding="lg">
       <div class="text-center py-8">
-        <p class="text-gray-500">Cargando información de la acción...</p>
+        <p class="text-gray-500 dark:text-gray-400">Cargando información de la acción...</p>
       </div>
     </Card>
   </div>

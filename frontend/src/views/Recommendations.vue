@@ -1,19 +1,19 @@
 <template>
   <div class="recommendations-container p-6">
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Recomendaciones de Inversión</h1>
-      <p class="text-gray-600">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Recomendaciones de Inversión</h1>
+      <p class="text-gray-600 dark:text-gray-400">
         Las mejores acciones para invertir basadas en nuestro algoritmo de recomendación
       </p>
     </div>
 
     <Card variant="elevated" padding="lg">
       <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-xl font-semibold">Top Recomendaciones</h2>
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Top Recomendaciones</h2>
         <select
           v-model="selectedLimit"
           @change="handleLimitChange"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option :value="10">Top 10</option>
           <option :value="20">Top 20</option>
@@ -25,46 +25,46 @@
         <div
           v-for="(rec, index) in recommendations"
           :key="rec.stock.id"
-          class="recommendation-item p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow duration-200 cursor-pointer"
+          class="recommendation-item p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:shadow-md dark:hover:shadow-lg transition-shadow duration-200 cursor-pointer"
           @click="goToStock(rec.stock.ticker)"
         >
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-2">
-                <span class="text-2xl font-bold text-indigo-600">#{{ index + 1 }}</span>
+                <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">#{{ index + 1 }}</span>
                 <div>
-                  <h3 class="text-lg font-semibold text-gray-900">
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {{ rec.stock.ticker }}
                   </h3>
-                  <p class="text-sm text-gray-600">{{ rec.stock.companyName }}</p>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ rec.stock.companyName }}</p>
                 </div>
               </div>
 
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Score Total</p>
-                  <p class="text-lg font-bold text-indigo-600">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Score Total</p>
+                  <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                     {{ rec.score.toFixed(2) }}
                   </p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Cambio %</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Cambio %</p>
                   <p
-                    :class="rec.priceChange > 0 ? 'text-green-600' : 'text-red-600'"
+                    :class="rec.priceChange > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'"
                     class="text-lg font-semibold"
                   >
                     {{ rec.priceChange > 0 ? '+' : '' }}{{ rec.priceChange.toFixed(2) }}%
                   </p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Rating Score</p>
-                  <p class="text-lg font-semibold text-gray-900">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rating Score</p>
+                  <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {{ rec.ratingScore.toFixed(2) }}
                   </p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Target</p>
-                  <p class="text-lg font-semibold text-gray-900">
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Target</p>
+                  <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     ${{ rec.stock.targetTo?.toFixed(2) || 'N/A' }}
                   </p>
                 </div>
@@ -84,16 +84,16 @@
       </div>
 
       <div v-else-if="!loading" class="text-center py-8">
-        <p class="text-gray-500">No hay recomendaciones disponibles</p>
+        <p class="text-gray-500 dark:text-gray-400">No hay recomendaciones disponibles</p>
       </div>
     </Card>
 
     <Card v-if="recommendations.length > 0" variant="outlined" padding="md" class="mt-6">
-      <h3 class="text-lg font-semibold mb-3">Sobre el Algoritmo</h3>
-      <p class="text-gray-600 text-sm">
+      <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Sobre el Algoritmo</h3>
+      <p class="text-gray-600 dark:text-gray-400 text-sm">
         El algoritmo de recomendación considera múltiples factores:
       </p>
-      <ul class="mt-2 space-y-1 text-sm text-gray-600 list-disc list-inside">
+      <ul class="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400 list-disc list-inside">
         <li>Cambio porcentual en el precio objetivo (50% del score)</li>
         <li>Rating de la acción (30% del score)</li>
         <li>Acción realizada (20% del score)</li>

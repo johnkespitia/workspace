@@ -1,8 +1,8 @@
 <template>
   <div class="input-wrapper">
-    <label v-if="label" :for="inputId" class="block text-sm font-medium mb-1">
+    <label v-if="label" :for="inputId" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
       {{ label }}
-      <span v-if="required" class="text-red-500" aria-label="requerido">*</span>
+      <span v-if="required" class="text-red-500 dark:text-red-400" aria-label="requerido">*</span>
     </label>
     <div class="relative">
       <input
@@ -20,14 +20,14 @@
         @blur="handleBlur"
         @focus="handleFocus"
       />
-      <span v-if="icon" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" aria-hidden="true">
+      <span v-if="icon" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" aria-hidden="true">
         {{ icon }}
       </span>
     </div>
-    <p v-if="error" :id="`${inputId}-error`" class="mt-1 text-sm text-red-600" role="alert">
+    <p v-if="error" :id="`${inputId}-error`" class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="mt-1 text-sm text-gray-500">
+    <p v-else-if="hint" class="mt-1 text-sm text-gray-500 dark:text-gray-400">
       {{ hint }}
     </p>
   </div>
@@ -66,13 +66,13 @@ const inputId = computed(() => props.id || `input-${Math.random().toString(36).s
 const hasError = computed(() => !!props.error);
 
 const inputClasses = computed(() => {
-  const base = 'w-full px-4 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-gray-100 disabled:cursor-not-allowed';
+  const base = 'w-full px-4 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:bg-gray-100 dark:disabled:bg-gray-700 disabled:cursor-not-allowed bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500';
   
   if (hasError.value) {
-    return `${base} border-red-500 focus:ring-red-500 focus:border-red-500`;
+    return `${base} border-red-500 dark:border-red-400 focus:ring-red-500 focus:border-red-500 dark:focus:border-red-400`;
   }
   
-  return `${base} border-gray-300 focus:ring-indigo-500 focus:border-indigo-500`;
+  return `${base} border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-400`;
 });
 
 const handleInput = (event: Event) => {

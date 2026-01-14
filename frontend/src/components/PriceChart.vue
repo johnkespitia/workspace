@@ -1,6 +1,6 @@
 <template>
     <div class="price-chart-container">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Evolución del Precio Objetivo</h3>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Evolución del Precio Objetivo</h3>
         <div class="chart-wrapper" :style="{ height: height + 'px' }">
             <Line v-if="chartData" :data="chartData" :options="chartOptions" :aria-label="ariaLabel" />
         </div>
