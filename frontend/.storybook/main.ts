@@ -8,6 +8,7 @@ const config: StorybookConfig = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
+    '@storybook/addon-a11y', // Addon de accesibilidad
   ],
   framework: {
     name: '@storybook/vue3-vite',

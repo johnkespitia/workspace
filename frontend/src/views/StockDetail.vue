@@ -10,10 +10,7 @@
       <template #header>
         <div class="flex items-center justify-between">
           <h1 class="text-3xl font-bold text-gray-900">{{ stock.ticker }}</h1>
-          <span
-            :class="getRatingClass(stock.ratingTo)"
-            class="px-3 py-1 rounded-lg text-sm font-semibold"
-          >
+          <span :class="getRatingClass(stock.ratingTo)" class="px-3 py-1 rounded-lg text-sm font-semibold">
             {{ stock.ratingTo || 'N/A' }}
           </span>
         </div>
@@ -56,10 +53,7 @@
 
         <div>
           <h3 class="text-sm font-medium text-gray-500 mb-2">Cambio</h3>
-          <p
-            :class="getChangeClass(calculateChange())"
-            class="text-lg font-semibold"
-          >
+          <p :class="getChangeClass(calculateChange())" class="text-lg font-semibold">
             {{ calculateChange() > 0 ? '+' : '' }}{{ calculateChange().toFixed(2) }}%
           </p>
         </div>
@@ -84,6 +78,12 @@
       </div>
     </Card>
 
+    <!-- Gráfico de evolución del precio -->
+    <Card v-if="stock && stock.targetFrom && stock.targetTo" variant="elevated" padding="lg" class="mt-6">
+      <PriceChart :target-from="stock.targetFrom" :target-to="stock.targetTo"
+        :aria-label="`Gráfico de evolución del precio objetivo para ${stock.ticker}`" />
+    </Card>
+
     <Card v-else variant="elevated" padding="lg">
       <div class="text-center py-8">
         <p class="text-gray-500">Cargando información de la acción...</p>
@@ -93,12 +93,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useStock } from '@/composables/useStock';
-import Card from '@/design-system/components/Card/Card.vue';
-import Button from '@/design-system/components/Button/Button.vue';
-import type { Stock } from '@/utils/api';
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStock } from "@/composables/useStock";
+import Card from "@/design-system/components/Card/Card.vue";
+import Button from "@/design-system/components/Button/Button.vue";
+import PriceChart from "@/components/PriceChart.vue";
+import type { Stock } from "@/utils/api";
 
 const route = useRoute();
 const router = useRouter();
@@ -124,7 +125,7 @@ const calculateChange = (): number => {
 
 const getRatingClass = (rating: string | null | undefined) => {
   if (!rating) return 'bg-gray-100 text-gray-700';
-  
+
   const ratingLower = rating.toLowerCase();
   if (ratingLower.includes('strong buy')) {
     return 'bg-green-100 text-green-800';

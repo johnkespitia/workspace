@@ -33,7 +33,11 @@
             v-for="(row, rowIndex) in data"
             :key="rowIndex"
             :class="rowClasses(rowIndex)"
+            :tabindex="clickable ? 0 : -1"
+            :aria-selected="clickable && focusedRowIndex === rowIndex"
+            :role="clickable ? 'button' : undefined"
             @click="handleRowClick(row)"
+            @keydown="handleRowKeyDown($event, row, rowIndex)"
           >
             <td
               v-for="(header, colIndex) in headers"
@@ -64,7 +68,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { handleKeyboardNavigation } from '@/utils/accessibility';
 
 export interface TableHeader {
   key: string;
@@ -96,6 +101,7 @@ const emit = defineEmits<{
 
 const sortKey = ref<string | null>(null);
 const sortDirection = ref<'asc' | 'desc'>('asc');
+const focusedRowIndex = ref<number | null>(null);
 
 const tableClasses = computed(() => {
   return 'min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden';
@@ -143,6 +149,35 @@ const handleRowClick = (row: Record<string, any>) => {
     emit('rowClick', row);
   }
 };
+
+const handleRowKeyDown = (event: KeyboardEvent, row: Record<string, any>, index: number) => {
+  if (!props.clickable) return;
+
+  const newIndex = handleKeyboardNavigation(
+    event,
+    props.data,
+    focusedRowIndex.value ?? index,
+    (idx) => {
+      focusedRowIndex.value = idx;
+      // Focus en la fila
+      const rowElement = event.currentTarget as HTMLElement;
+      rowElement.focus();
+    }
+  );
+
+  if (event.key === 'Enter' || event.key === ' ') {
+    handleRowClick(row);
+  }
+
+  if (newIndex !== null) {
+    focusedRowIndex.value = newIndex;
+  }
+};
+
+// Resetear focusedRowIndex cuando cambian los datos
+onMounted(() => {
+  focusedRowIndex.value = null;
+});
 </script>
 
 <style scoped>

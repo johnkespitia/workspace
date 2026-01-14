@@ -8,7 +8,12 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview --port 3000",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:run": "vitest run",
+    "build:analyze": "vite build --mode analyze"
   },
   "dependencies": {
     "vue": "^3.4.0",
@@ -16,7 +21,9 @@
     "vue-router": "^4.2.5",
     "@urql/core": "^4.0.0",
     "@urql/vue": "^2.0.0",
-    "graphql": "^16.8.1"
+    "graphql": "^16.8.1",
+    "chart.js": "^4.4.0",
+    "vue-chartjs": "^5.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
@@ -31,8 +38,15 @@
     "@storybook/addon-essentials": "^7.6.3",
     "@storybook/addon-interactions": "^7.6.3",
     "@storybook/addon-links": "^7.6.3",
+    "@storybook/addon-a11y": "^7.6.3",
     "@storybook/blocks": "^7.6.3",
     "storybook": "^7.6.3",
-    "vitest": "^1.0.4"
+    "vitest": "^1.0.4",
+    "@vue/test-utils": "^2.4.3",
+    "@testing-library/vue": "^8.0.1",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/user-event": "^14.5.1",
+    "jsdom": "^23.0.1",
+    "rollup-plugin-visualizer": "^5.12.0"
   }
 }
