@@ -3,9 +3,13 @@ package handlers
 import (
 	"embed"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/russross/blackfriday/v2"
 )
 
 //go:embed docs_templates/*
@@ -94,19 +98,36 @@ func SwaggerUIHandler() http.HandlerFunc {
 // OpenAPISpecHandler sirve el archivo OpenAPI YAML
 func OpenAPISpecHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Intentar encontrar el archivo openapi.yaml
-		// Buscar en varias ubicaciones posibles
-		possiblePaths := []string{
+		filePath := findFile("docs/openapi.yaml", []string{
 			"./docs/openapi.yaml",
 			"../docs/openapi.yaml",
 			"../../docs/openapi.yaml",
+		})
+
+		if filePath == "" {
+			http.Error(w, "OpenAPI spec file not found", http.StatusNotFound)
+			return
 		}
 
-		// También buscar desde el directorio de trabajo actual
+		w.Header().Set("Content-Type", "application/x-yaml")
+		http.ServeFile(w, r, filePath)
+	}
+}
+
+// MarkdownDocHandler sirve archivos Markdown convertidos a HTML
+func MarkdownDocHandler(docPath string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Buscar el archivo en varias ubicaciones
+		possiblePaths := []string{
+			"./docs/" + docPath,
+			"../docs/" + docPath,
+			"../../docs/" + docPath,
+		}
+
 		wd, _ := os.Getwd()
 		possiblePaths = append(possiblePaths,
-			filepath.Join(wd, "docs", "openapi.yaml"),
-			filepath.Join(wd, "api", "docs", "openapi.yaml"),
+			filepath.Join(wd, "docs", docPath),
+			filepath.Join(wd, "api", "docs", docPath),
 		)
 
 		var filePath string
@@ -118,11 +139,210 @@ func OpenAPISpecHandler() http.HandlerFunc {
 		}
 
 		if filePath == "" {
-			http.Error(w, "OpenAPI spec file not found", http.StatusNotFound)
+			http.Error(w, "Documentation file not found: "+docPath, http.StatusNotFound)
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/x-yaml")
-		http.ServeFile(w, r, filePath)
+		// Leer el archivo Markdown
+		content, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			return
+		}
+
+		// Convertir Markdown a HTML
+		html := blackfriday.Run(content)
+
+		// Crear página HTML completa
+		htmlPage := createMarkdownHTMLPage(string(html), getTitleFromPath(docPath))
+
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(htmlPage))
 	}
+}
+
+// findFile busca un archivo en múltiples rutas posibles
+func findFile(filename string, possiblePaths []string) string {
+	wd, _ := os.Getwd()
+	possiblePaths = append(possiblePaths,
+		filepath.Join(wd, filename),
+		filepath.Join(wd, "api", filename),
+	)
+
+	for _, path := range possiblePaths {
+		if _, err := os.Stat(path); err == nil {
+			return path
+		}
+	}
+	return ""
+}
+
+// getTitleFromPath extrae un título legible del path del archivo
+func getTitleFromPath(path string) string {
+	base := filepath.Base(path)
+	base = strings.TrimSuffix(base, ".md")
+	base = strings.TrimSuffix(base, ".MD")
+	
+	// Reemplazar guiones y guiones bajos con espacios
+	base = strings.ReplaceAll(base, "-", " ")
+	base = strings.ReplaceAll(base, "_", " ")
+	
+	// Capitalizar primera letra de cada palabra
+	words := strings.Fields(base)
+	for i, word := range words {
+		if len(word) > 0 {
+			words[i] = strings.ToUpper(string(word[0])) + strings.ToLower(word[1:])
+		}
+	}
+	
+	return strings.Join(words, " ")
+}
+
+// createMarkdownHTMLPage crea una página HTML completa con el contenido Markdown
+func createMarkdownHTMLPage(content, title string) string {
+	return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>` + template.HTMLEscapeString(title) + `</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #667eea;
+    }
+    .header h1 {
+      color: #667eea;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .content {
+      line-height: 1.8;
+    }
+    .content h1, .content h2, .content h3, .content h4 {
+      color: #333;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    .content h1 {
+      font-size: 2em;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    .content h2 {
+      font-size: 1.5em;
+      color: #667eea;
+    }
+    .content h3 {
+      font-size: 1.3em;
+    }
+    .content code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #d63384;
+    }
+    .content pre {
+      background: #f4f4f4;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    .content pre code {
+      background: none;
+      padding: 0;
+      color: #333;
+    }
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .content table th,
+    .content table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    .content table th {
+      background: #667eea;
+      color: white;
+      font-weight: 600;
+    }
+    .content table tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    .content ul, .content ol {
+      margin: 15px 0;
+      padding-left: 30px;
+    }
+    .content li {
+      margin: 8px 0;
+    }
+    .content blockquote {
+      border-left: 4px solid #667eea;
+      padding-left: 20px;
+      margin: 20px 0;
+      color: #666;
+      font-style: italic;
+    }
+    .content a {
+      color: #667eea;
+      text-decoration: none;
+    }
+    .content a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>` + template.HTMLEscapeString(title) + `</h1>
+      <a href="/docs" class="back-link">← Volver a Documentación</a>
+    </div>
+    <div class="content">
+      ` + string(content) + `
+    </div>
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+      <a href="/docs" class="back-link">← Volver a Documentación</a>
+    </div>
+  </div>
+</body>
+</html>`
 }

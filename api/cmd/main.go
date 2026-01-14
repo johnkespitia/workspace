@@ -90,6 +90,15 @@ func main() {
 	mux.HandleFunc("/docs", handlers.DocsHandler())
 	mux.HandleFunc("/docs/swagger", handlers.SwaggerUIHandler())
 	mux.HandleFunc("/docs/openapi.yaml", handlers.OpenAPISpecHandler())
+	
+	// Documentación Markdown
+	mux.HandleFunc("/docs/api", handlers.MarkdownDocHandler("API_DOCUMENTATION.md"))
+	mux.HandleFunc("/docs/guide", handlers.MarkdownDocHandler("USER_GUIDE.md"))
+	mux.HandleFunc("/docs/graphql", func(w http.ResponseWriter, r *http.Request) {
+		// Redirigir a la documentación GraphQL en docs/
+		http.Redirect(w, r, "/docs/graphql-reference", http.StatusMovedPermanently)
+	})
+	mux.HandleFunc("/docs/graphql-reference", handlers.MarkdownDocHandler("GRAPHQL_API_REFERENCE.md"))
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Server.Port,
