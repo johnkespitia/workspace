@@ -117,22 +117,44 @@ func OpenAPISpecHandler() http.HandlerFunc {
 // MarkdownDocHandler sirve archivos Markdown convertidos a HTML
 func MarkdownDocHandler(docPath string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Buscar el archivo en varias ubicaciones
+		// Obtener el directorio de trabajo actual
+		wd, err := os.Getwd()
+		if err != nil {
+			http.Error(w, "Error getting working directory", http.StatusInternalServerError)
+			return
+		}
+
+		// Buscar el archivo en varias ubicaciones posibles
+		// Los archivos están en:
+		// - api/docs/API_DOCUMENTATION.md
+		// - api/docs/USER_GUIDE.md
+		// - docs/GRAPHQL_API_REFERENCE.md (en el workspace root)
 		possiblePaths := []string{
+			// Desde el directorio api/ (cuando se ejecuta desde api/)
+			filepath.Join(wd, "docs", docPath),           // api/docs/API_DOCUMENTATION.md
+			// Desde el workspace root (cuando se ejecuta desde workspace/)
+			filepath.Join(wd, "api", "docs", docPath),    // api/docs/API_DOCUMENTATION.md
+			filepath.Join(wd, "docs", docPath),           // docs/GRAPHQL_API_REFERENCE.md
+			// Rutas relativas desde api/
 			"./docs/" + docPath,
 			"../docs/" + docPath,
 			"../../docs/" + docPath,
+			"./api/docs/" + docPath,
+			"../api/docs/" + docPath,
 		}
 
-		wd, _ := os.Getwd()
-		possiblePaths = append(possiblePaths,
-			filepath.Join(wd, "docs", docPath),
-			filepath.Join(wd, "api", "docs", docPath),
-		)
+		// También buscar desde el directorio padre (workspace root)
+		parentWd := filepath.Dir(wd)
+		if parentWd != wd {
+			possiblePaths = append(possiblePaths,
+				filepath.Join(parentWd, "docs", docPath),
+				filepath.Join(parentWd, "api", "docs", docPath),
+			)
+		}
 
 		var filePath string
 		for _, path := range possiblePaths {
-			if _, err := os.Stat(path); err == nil {
+			if info, err := os.Stat(path); err == nil && !info.IsDir() {
 				filePath = path
 				break
 			}

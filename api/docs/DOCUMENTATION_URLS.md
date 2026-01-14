@@ -6,30 +6,31 @@ Cuando el servidor está corriendo en `http://localhost:8080`, las siguientes UR
 
 ### 📚 Documentación Principal
 
-| URL | Descripción |
-|-----|-------------|
-| `http://localhost:8080/docs` | **Página principal de documentación** - Punto de entrada con enlaces a todas las herramientas |
-| `http://localhost:8080/docs/swagger` | **Swagger UI** - Interfaz interactiva para explorar la API REST |
-| `http://localhost:8080/docs/openapi.yaml` | **Especificación OpenAPI** - Archivo YAML con la especificación completa |
+| URL                                       | Descripción                                                                                   |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `http://localhost:8080/docs`              | **Página principal de documentación** - Punto de entrada con enlaces a todas las herramientas |
+| `http://localhost:8080/docs/swagger`      | **Swagger UI** - Interfaz interactiva para explorar la API REST                               |
+| `http://localhost:8080/docs/openapi.yaml` | **Especificación OpenAPI** - Archivo YAML con la especificación completa                      |
 
 ### 🎮 Herramientas Interactivas
 
-| URL | Descripción |
-|-----|-------------|
+| URL                                | Descripción                                                                      |
+| ---------------------------------- | -------------------------------------------------------------------------------- |
 | `http://localhost:8080/playground` | **GraphQL Playground** - Interfaz visual para probar queries y mutations GraphQL |
 
 ### 🔗 Endpoints de la API
 
-| URL | Método | Descripción |
-|-----|--------|-------------|
-| `http://localhost:8080/health` | GET | Health check del servidor |
-| `http://localhost:8080/query` | POST | Endpoint principal GraphQL |
+| URL                            | Método | Descripción                |
+| ------------------------------ | ------ | -------------------------- |
+| `http://localhost:8080/health` | GET    | Health check del servidor  |
+| `http://localhost:8080/query`  | POST   | Endpoint principal GraphQL |
 
 ---
 
 ## 🚀 Inicio Rápido
 
 1. **Iniciar el servidor**:
+
    ```bash
    cd api
    go run ./cmd/main.go
@@ -45,15 +46,18 @@ Cuando el servidor está corriendo en `http://localhost:8080`, las siguientes UR
 ## 📖 Documentación por Tipo
 
 ### Para Usuarios Finales
+
 - **Guía de Usuario**: Ver archivo `USER_GUIDE.md` (no disponible vía web, solo archivo)
 - **GraphQL Playground**: `http://localhost:8080/playground` (interfaz visual)
 
 ### Para Desarrolladores
+
 - **Swagger UI**: `http://localhost:8080/docs/swagger` (documentación REST interactiva)
 - **OpenAPI Spec**: `http://localhost:8080/docs/openapi.yaml` (especificación técnica)
 - **Documentación Completa**: Ver archivo `API_DOCUMENTATION.md` (no disponible vía web, solo archivo)
 
 ### Para Integración
+
 - **GraphQL Endpoint**: `http://localhost:8080/query` (endpoint principal)
 - **GraphQL Playground**: `http://localhost:8080/playground` (para probar queries)
 
