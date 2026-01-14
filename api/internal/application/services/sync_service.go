@@ -30,6 +30,10 @@ func (s *SyncService) SyncAllStocks(ctx context.Context) (int, error) {
 		return 0, fmt.Errorf("failed to fetch stocks from API: %w", err)
 	}
 
+	if len(stocks) == 0 {
+		return 0, fmt.Errorf("no stocks found in API response")
+	}
+
 	// Guardar en base de datos usando batch upsert
 	if err := s.repo.BatchUpsert(ctx, stocks); err != nil {
 		return 0, fmt.Errorf("failed to save stocks to database: %w", err)

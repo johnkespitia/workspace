@@ -65,8 +65,35 @@ export function useApi() {
     error.value = null;
 
     try {
+      // Preparar variables para GraphQL (remover campos undefined/null)
+      const variables: any = {
+        limit,
+        offset,
+      };
+      
+      // Solo incluir filter si tiene al menos un campo definido
+      if (filter && Object.keys(filter).some(key => filter[key as keyof StockFilter] !== undefined)) {
+        const cleanFilter: any = {};
+        if (filter.ticker) cleanFilter.ticker = filter.ticker;
+        if (filter.companyName) cleanFilter.companyName = filter.companyName;
+        if (filter.ratings && filter.ratings.length > 0) cleanFilter.ratings = filter.ratings;
+        if (filter.action) cleanFilter.action = filter.action;
+        
+        if (Object.keys(cleanFilter).length > 0) {
+          variables.filter = cleanFilter;
+        }
+      }
+      
+      // Solo incluir sort si tiene al menos un campo definido
+      if (sort && (sort.field || sort.direction)) {
+        const cleanSort: any = {};
+        if (sort.field) cleanSort.field = sort.field;
+        if (sort.direction) cleanSort.direction = sort.direction;
+        variables.sort = cleanSort;
+      }
+      
       const promise = graphqlClient
-        .query(GET_STOCKS_QUERY, { filter, sort, limit, offset })
+        .query(GET_STOCKS_QUERY, variables)
         .toPromise()
         .then((result) => {
           if (result.error) {

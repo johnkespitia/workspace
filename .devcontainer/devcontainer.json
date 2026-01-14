@@ -35,9 +35,9 @@
   },
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-  "forwardPorts": [3000, 8080, 26257],
+  "forwardPorts": [3001, 8080, 26257],
   "portsAttributes": {
-    "3000": {
+    "3001": {
       "label": "Frontend (Vue 3)",
       "onAutoForward": "notify"
     },
@@ -50,7 +50,8 @@
       "onAutoForward": "silent"
     }
   },
-  "postCreateCommand": "bash .devcontainer/postCreate.sh",
+  "postCreateCommand": "bash .devcontainer/postCreate.sh || echo 'Post-create script completed with warnings'",
+  "postStartCommand": "bash .devcontainer/start-api-auto.sh || echo 'API start script completed with warnings'",
   "containerUser": "root",
   "overrideCommand": false,
   "remoteEnv": {

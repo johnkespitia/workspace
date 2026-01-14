@@ -73,7 +73,7 @@ import { withSearch } from '@/hoc/withSearch';
 import Table from '@/design-system/components/Table/Table.vue';
 import Card from '@/design-system/components/Card/Card.vue';
 import Button from '@/design-system/components/Button/Button.vue';
-import type { StockSort } from '@/utils/api';
+import type { StockSort, StockSortField, SortDirection } from '@/utils/api';
 
 const router = useRouter();
 const stockComposable = useStock();
@@ -124,10 +124,26 @@ const handleSync = async () => {
   }
 };
 
+// Mapeo de nombres de campos de la tabla a valores del enum GraphQL
+const mapFieldToEnum = (field: string): StockSortField => {
+  const fieldMap: Record<string, StockSortField> = {
+    ticker: "TICKER",
+    companyName: "COMPANY_NAME",
+    ratingTo: "RATING_TO",
+    targetTo: "TARGET_TO",
+    createdAt: "CREATED_AT",
+  };
+  return fieldMap[field] || "TICKER";
+};
+
+const mapDirectionToEnum = (direction: 'asc' | 'desc'): SortDirection => {
+  return direction === 'asc' ? 'ASC' : 'DESC';
+};
+
 const handleSort = (key: string, direction: 'asc' | 'desc') => {
   const sort: StockSort = {
-    field: key as any,
-    direction,
+    field: mapFieldToEnum(key),
+    direction: mapDirectionToEnum(direction),
   };
   stockComposable.setSort(sort);
   stockComposable.loadStocks(stockComposable.filter.value, sort, 1);
@@ -136,7 +152,7 @@ const handleSort = (key: string, direction: 'asc' | 'desc') => {
 const handleFilterChange = () => {
   const filter = {
     ...stockComposable.filter.value,
-    rating: selectedRating.value ? [selectedRating.value] : undefined,
+    ratings: selectedRating.value ? [selectedRating.value] : undefined, // ✅ Usar ratings (plural)
   };
   stockComposable.setFilter(filter);
   stockComposable.loadStocks(filter, stockComposable.sort.value, 1);

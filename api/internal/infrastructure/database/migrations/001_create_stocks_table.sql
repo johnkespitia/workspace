@@ -26,14 +26,19 @@ CREATE INDEX IF NOT EXISTS idx_stocks_company_name ON stocks(company_name);
 CREATE INDEX IF NOT EXISTS idx_stocks_rating_target ON stocks(rating_to, target_to);
 
 -- Trigger para actualizar updated_at automáticamente
+-- Nota: CockroachDB v23.1 puede tener limitaciones con triggers
+-- Si el trigger falla, se puede actualizar updated_at manualmente en el código
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = now();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
+-- Crear el trigger
+-- Nota: En algunas versiones de CockroachDB, los triggers pueden no estar completamente soportados
+-- Si falla, puedes comentar esta sección y actualizar updated_at manualmente en el código Go
 CREATE TRIGGER update_stocks_updated_at 
     BEFORE UPDATE ON stocks 
     FOR EACH ROW 

@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/john/go-react-test/api/internal/application/graphql"
+	"github.com/john/go-react-test/api/internal/application/handlers"
 	"github.com/john/go-react-test/api/internal/application/services"
 	"github.com/john/go-react-test/api/internal/config"
 	"github.com/john/go-react-test/api/internal/domain/recommendation"
@@ -60,10 +62,14 @@ func main() {
 	recommendationAlgorithm := recommendation.NewRecommendationAlgorithm(stockDomainSvc)
 	recommendationService := services.NewRecommendationService(stockService, recommendationAlgorithm)
 
-	// Inicializar handlers (se implementarán en FASE 2)
-	_ = stockService
-	_ = syncService
-	_ = recommendationService
+	// Inicializar GraphQL schema
+	graphqlSchema, err := graphql.NewSchema(stockService, syncService, recommendationService)
+	if err != nil {
+		log.Fatalf("Failed to create GraphQL schema: %v", err)
+	}
+
+	// Crear handler GraphQL
+	graphqlHandler := handlers.NewGraphQLHandler(graphqlSchema.GetSchema())
 
 	// Configurar servidor HTTP
 	mux := http.NewServeMux()
@@ -74,15 +80,23 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
-	// TODO: Agregar handlers GraphQL en FASE 2
-	// mux.HandleFunc("/graphql", handlers.GraphQLHandler)
+	// GraphQL endpoint
+	mux.Handle("/query", graphqlHandler)
+
+	// GraphQL Playground (solo en desarrollo)
+	mux.Handle("/playground", handlers.PlaygroundHandler("GraphQL Playground", "/query"))
+
+	// Documentación
+	mux.HandleFunc("/docs", handlers.DocsHandler())
+	mux.HandleFunc("/docs/swagger", handlers.SwaggerUIHandler())
+	mux.HandleFunc("/docs/openapi.yaml", handlers.OpenAPISpecHandler())
 
 	server := &http.Server{
 		Addr:         ":" + cfg.Server.Port,
 		Handler:      mux,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 60 * time.Second, // Aumentado para operaciones largas como syncStocks
+		IdleTimeout:  120 * time.Second,
 	}
 
 	// Iniciar servidor en goroutine

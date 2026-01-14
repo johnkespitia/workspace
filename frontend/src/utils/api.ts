@@ -1,8 +1,21 @@
 // Cliente GraphQL para comunicación con el backend
-import { Client, cacheExchange, fetchExchange } from '@urql/core';
+import { Client, cacheExchange, fetchExchange } from "@urql/core";
 
 // Configuración del cliente GraphQL
-const GRAPHQL_ENDPOINT = import.meta.env.VITE_GRAPHQL_ENDPOINT || 'http://localhost:8080/query';
+// Desde el contenedor, usar el nombre del servicio; desde el host, usar localhost
+const getGraphQLEndpoint = () => {
+  const envEndpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
+  if (envEndpoint) {
+    return envEndpoint;
+  }
+  // Si estamos en el navegador (cliente), usar localhost
+  // Si estamos en el servidor (SSR), usar el nombre del servicio
+  return typeof window !== "undefined"
+    ? "http://localhost:8080/query"
+    : "http://api:8080/query";
+};
+
+const GRAPHQL_ENDPOINT = getGraphQLEndpoint();
 
 export const graphqlClient = new Client({
   url: GRAPHQL_ENDPOINT,
@@ -25,15 +38,23 @@ export interface Stock {
 }
 
 export interface StockFilter {
-  ticker?: string;
-  companyName?: string;
-  rating?: string[];
-  action?: string;
+  ticker?: string; // Búsqueda exacta por ticker
+  companyName?: string; // Búsqueda parcial por nombre de empresa
+  ratings?: string[]; // ✅ CORRECTO: Array de ratings (PLURAL)
+  action?: string; // Búsqueda exacta por acción
 }
 
+export type StockSortField =
+  | "TICKER"
+  | "COMPANY_NAME"
+  | "RATING_TO"
+  | "TARGET_TO"
+  | "CREATED_AT";
+export type SortDirection = "ASC" | "DESC";
+
 export interface StockSort {
-  field: 'ticker' | 'companyName' | 'ratingTo' | 'targetTo' | 'createdAt';
-  direction: 'asc' | 'desc';
+  field?: StockSortField; // Campo por el cual ordenar (opcional)
+  direction?: SortDirection; // Dirección del ordenamiento (opcional)
 }
 
 export interface StockConnection {

@@ -1,0 +1,281 @@
+openapi: 3.0.3
+info:
+  title: Stock Information API
+  description: |
+    API REST y GraphQL para gestionar información de acciones desde una API externa.
+
+    Esta API proporciona endpoints HTTP básicos y un endpoint GraphQL completo para:
+    - Consultar stocks con filtros y ordenamiento
+    - Sincronizar stocks desde API externa
+    - Obtener recomendaciones de inversión
+
+    **Nota**: La funcionalidad principal está disponible a través de GraphQL (`/query`).
+    Los endpoints REST son limitados y se usan principalmente para health checks.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor de desarrollo local
+  - url: https://api.example.com
+    description: Servidor de producción
+
+tags:
+  - name: Health
+    description: Endpoints de salud y estado del servidor
+  - name: GraphQL
+    description: Endpoint GraphQL principal
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health Check
+      description: |
+        Verifica el estado del servidor. Retorna `200 OK` si el servidor está funcionando correctamente.
+
+        Este endpoint es útil para:
+        - Monitoreo de salud del servicio
+        - Load balancers y health checks
+        - Verificación rápida de disponibilidad
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Servidor funcionando correctamente
+          content:
+            text/plain:
+              example: OK
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-01-15T10:30:00Z"
+        "500":
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /query:
+    post:
+      tags:
+        - GraphQL
+      summary: GraphQL Query Endpoint
+      description: |
+        Endpoint principal para ejecutar queries y mutations GraphQL.
+
+        **Formato de Request**:
+        ```json
+        {
+          "query": "query { ... }",
+          "variables": { ... }
+        }
+        ```
+
+        **Formato de Response**:
+        ```json
+        {
+          "data": { ... },
+          "errors": [ ... ]
+        }
+        ```
+
+        Para más información sobre el schema GraphQL, consulta la documentación completa
+        o usa el GraphQL Playground en `/playground`.
+      operationId: graphqlQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GraphQLRequest"
+            examples:
+              queryExample:
+                summary: Ejemplo de query
+                value:
+                  query: |
+                    query {
+                      stocks(limit: 10) {
+                        stocks {
+                          ticker
+                          companyName
+                          ratingTo
+                          targetTo
+                        }
+                        totalCount
+                      }
+                    }
+              mutationExample:
+                summary: Ejemplo de mutation
+                value:
+                  query: |
+                    mutation {
+                      syncStocks {
+                        success
+                        message
+                        stocksSynced
+                      }
+                    }
+      responses:
+        "200":
+          description: Respuesta GraphQL (puede contener errores en el body)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GraphQLResponse"
+              examples:
+                successExample:
+                  summary: Respuesta exitosa
+                  value:
+                    data:
+                      stocks:
+                        stocks:
+                          - ticker: "AAPL"
+                            companyName: "Apple Inc."
+                            ratingTo: "Strong Buy"
+                            targetTo: 200.0
+                        totalCount: 1
+                errorExample:
+                  summary: Respuesta con errores
+                  value:
+                    errors:
+                      - message: "Cannot query field 'invalidField' on type 'Stock'"
+                        locations:
+                          - line: 2
+                            column: 5
+        "400":
+          description: Request inválido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "405":
+          description: Método no permitido (solo POST)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "408":
+          description: Request timeout (operación muy larga)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /playground:
+    get:
+      tags:
+        - GraphQL
+      summary: GraphQL Playground
+      description: |
+        Interfaz visual interactiva para explorar y probar el schema GraphQL.
+
+        **Características**:
+        - Explorador de schema interactivo
+        - Autocompletado de queries
+        - Validación en tiempo real
+        - Historial de queries
+        - Variables de entorno
+
+        **Nota**: Este endpoint solo está disponible en modo desarrollo.
+      operationId: graphqlPlayground
+      responses:
+        "200":
+          description: Interfaz HTML del GraphQL Playground
+          content:
+            text/html:
+              schema:
+                type: string
+
+components:
+  schemas:
+    GraphQLRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: Query o mutation GraphQL
+          example: "query { stocks(limit: 10) { stocks { ticker } } }"
+        variables:
+          type: object
+          description: Variables para la query (opcional)
+          additionalProperties: true
+        operationName:
+          type: string
+          description: Nombre de la operación (opcional, para queries con múltiples operaciones)
+          example: "GetStocks"
+
+    GraphQLResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          description: Datos retornados por la query (null si hay errores)
+          additionalProperties: true
+        errors:
+          type: array
+          description: Lista de errores (vacía si no hay errores)
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Cannot query field 'invalidField' on type 'Stock'"
+              locations:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    line:
+                      type: integer
+                    column:
+                      type: integer
+              path:
+                type: array
+                items:
+                  type: string
+              extensions:
+                type: object
+                additionalProperties: true
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Mensaje de error
+          example: "Invalid request body"
+        code:
+          type: string
+          description: Código de error (opcional)
+          example: "INVALID_REQUEST"
+        details:
+          type: object
+          description: Detalles adicionales del error (opcional)
+          additionalProperties: true
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Autenticación mediante Bearer Token (si se implementa en el futuro).
+        Actualmente no se requiere autenticación.
+
+security: []

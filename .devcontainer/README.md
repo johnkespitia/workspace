@@ -51,7 +51,7 @@ Las siguientes variables están disponibles en el contenedor:
 
 ### SQL Shell
 ```bash
-docker exec -it cockroachdb ./cockroach sql --insecure
+docker exec -it go-react-test-cockroachdb ./cockroach sql --insecure
 ```
 
 ### Web UI
@@ -83,10 +83,53 @@ npm install
 
 ### Ver logs de CockroachDB
 ```bash
-docker logs cockroachdb
+docker logs go-react-test-cockroachdb
 ```
 
 ### Reiniciar CockroachDB
 ```bash
-docker-compose restart cockroachdb
+cd .devcontainer && docker-compose -p go-react-test-devcontainer restart cockroachdb
 ```
+
+## Abrir IDE con Dev Container
+
+El proyecto incluye un script para abrir automáticamente Cursor o VS Code con el devcontainer:
+
+### Desde el Makefile (recomendado)
+```bash
+# Inicializar y abrir IDE automáticamente
+make dev-init
+
+# Solo abrir el IDE (si ya está inicializado)
+make dev-open
+```
+
+### Configurar IDE Preferido
+
+Puedes configurar tu IDE preferido mediante variable de entorno:
+
+```bash
+# Usar Cursor
+export IDE=cursor
+make dev-init
+
+# Usar VS Code
+export IDE=code
+make dev-init
+
+# Auto-detectar (usa el primero disponible)
+export IDE=auto
+make dev-init
+```
+
+Si no defines `IDE`, el script te preguntará interactivamente qué IDE deseas usar.
+
+### Manualmente
+
+Si prefieres abrir el IDE manualmente:
+
+1. Abre Cursor o VS Code
+2. Abre la carpeta del proyecto
+3. Ejecuta: `Dev Containers: Reopen in Container` (Cmd+Shift+P / Ctrl+Shift+P)
+
+**Nota:** Asegúrate de tener instalada la extensión "Dev Containers" en tu IDE.

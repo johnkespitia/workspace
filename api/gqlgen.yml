@@ -1,0 +1,20 @@
+# Configuración de gqlgen
+# https://gqlgen.com/config/
+
+# Directorio donde se generará el código
+model:
+  filename: internal/application/graphql/models_gen.go
+  package: graphql
+
+# Directorio donde están los resolvers
+resolver:
+  layout: follow-schema
+  dir: internal/application/graphql
+  package: graphql
+
+# Configuración de modelos
+models:
+  Stock:
+    model: github.com/john/go-react-test/api/internal/domain/stock.Stock
+  Recommendation:
+    model: github.com/john/go-react-test/api/internal/domain/recommendation.Recommendation

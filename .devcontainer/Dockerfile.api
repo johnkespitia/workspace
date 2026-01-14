@@ -20,6 +20,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
   && rm -rf /var/lib/apt/lists/*
 
+# Instalar Docker CLI (sin el daemon, solo el cliente)
+RUN curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-24.0.7.tgz | \
+    tar -xzC /tmp && \
+    mv /tmp/docker/docker /usr/local/bin/ && \
+    rm -rf /tmp/docker
+
+# Instalar Docker Compose V2 (plugin)
+RUN curl -SL https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose
+
+# Agregar el usuario root al grupo docker para acceso sin sudo (si existe)
+RUN usermod -aG docker root 2>/dev/null || true
+
 # Install Node.js LTS for possible frontend tooling from the api container
 RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
   && apt-get install -y nodejs \
@@ -27,7 +40,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
   && corepack enable || true
 
 # Install air and common Go tools at image build time
-RUN go install github.com/cosmtrek/air@latest || true
+RUN go install github.com/air-verse/air@latest || true
 RUN go install golang.org/x/tools/gopls@latest || true
 RUN go install github.com/go-delve/delve/cmd/dlv@latest || true
 
@@ -38,6 +51,5 @@ RUN if [ -f "$GOBIN/dlv" ]; then ln -sf "$GOBIN/dlv" /usr/local/bin/dlv; fi || t
 
 WORKDIR /workspace
 
+# El comando se define en docker-compose.yml
 CMD ["/bin/bash"]
-
-CMD ["/bin/sh", "-c", "air"]

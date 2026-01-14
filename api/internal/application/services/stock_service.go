@@ -34,3 +34,33 @@ func (s *StockService) GetStock(ctx context.Context, ticker string) (*stock.Stoc
 func (s *StockService) CountStocks(ctx context.Context, filter stock.Filter) (int, error) {
 	return s.repo.Count(ctx, filter)
 }
+
+// GetStocksByTickers obtiene múltiples stocks por sus tickers (para DataLoader)
+func (s *StockService) GetStocksByTickers(ctx context.Context, tickers []string) ([]*stock.Stock, error) {
+	if len(tickers) == 0 {
+		return []*stock.Stock{}, nil
+	}
+
+	// Crear un mapa para resultados
+	resultMap := make(map[string]*stock.Stock)
+	
+	// Obtener cada stock por ticker
+	for _, ticker := range tickers {
+		stock, err := s.repo.FindByTicker(ctx, ticker)
+		if err != nil {
+			// Si no se encuentra, continuar con el siguiente
+			continue
+		}
+		resultMap[ticker] = stock
+	}
+
+	// Convertir mapa a slice manteniendo el orden de los tickers
+	result := make([]*stock.Stock, 0, len(tickers))
+	for _, ticker := range tickers {
+		if stock, ok := resultMap[ticker]; ok {
+			result = append(result, stock)
+		}
+	}
+
+	return result, nil
+}

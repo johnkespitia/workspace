@@ -1,12 +1,18 @@
+name: go-react-test-devcontainer
+
 services:
   api:
     build:
-      context: .
-      dockerfile: Dockerfile.api
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.api
+    container_name: go-react-test-api
     volumes:
       - ..:/workspace:cached
+      # Montar el socket de Docker del host para acceso a Docker desde el contenedor
+      - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /workspace
-    command: ["bash", ".devcontainer/start-api.sh"]
+    # Iniciar el API automáticamente al levantar el contenedor
+    command: ["bash", ".devcontainer/start-api-auto.sh"]
     ports:
       - "8080:8080"
     environment:
@@ -17,26 +23,30 @@ services:
       - COCKROACH_USER=root
       - COCKROACH_DB=defaultdb
     depends_on:
-      - cockroachdb
+      cockroachdb:
+        condition: service_healthy
     networks:
       - app-network
+    restart: unless-stopped
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ..
+      dockerfile: .devcontainer/Dockerfile.frontend
+    container_name: go-react-test-frontend
     volumes:
       - ..:/workspace:cached
     working_dir: /workspace/frontend
     ports:
-      - "3000:3000"
+      - "3001:3000" # Mapear puerto 3001 del host al 3000 del contenedor
     command: ["npm", "run", "dev"]
     networks:
       - app-network
+    restart: unless-stopped
 
   cockroachdb:
     image: cockroachdb/cockroach:latest-v23.1
-    container_name: cockroachdb
+    container_name: go-react-test-cockroachdb
     command: start-single-node --insecure --http-addr=:8080
     ports:
       - "26257:26257"
@@ -50,6 +60,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    restart: unless-stopped
 
 volumes:
   cockroach-data:

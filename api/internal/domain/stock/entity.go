@@ -1,10 +1,16 @@
 package stock
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+)
+
+// Errores del dominio
+var (
+	ErrStockNotFound = errors.New("stock not found")
 )
 
 // Stock representa una acción en el dominio

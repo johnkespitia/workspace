@@ -77,7 +77,7 @@ make dev-down
 ```
 
 **Comandos disponibles:**
-- `make dev-init` - Inicializa el dev container (construye e inicia servicios)
+- `make dev-init` - Inicializa el dev container (construye e inicia servicios) y abre el IDE
 - `make dev-up` - Inicia los servicios
 - `make dev-down` - Detiene los servicios
 - `make dev-rebuild` - Reconstruye las imágenes y reinicia
@@ -88,23 +88,70 @@ make dev-down
 - `make dev-shell` - Abre shell en el contenedor API
 - `make dev-restart` - Reinicia todos los servicios
 - `make dev-health` - Verifica el estado de salud
+- `make dev-open` - Abre el IDE (Cursor o VS Code) con el devcontainer
 
-#### Abrir en VS Code Dev Container
+#### Configurar IDE Preferido
 
+El comando `make dev-init` abrirá automáticamente tu IDE con el devcontainer. Puedes configurar tu IDE preferido de las siguientes maneras:
+
+**Opción 1: Variable de entorno (recomendado)**
+
+```bash
+# Para usar Cursor
+export IDE=cursor
+make dev-init
+
+# Para usar VS Code
+export IDE=code
+make dev-init
+
+# Para auto-detectar (usa el primero disponible)
+export IDE=auto
+make dev-init
+```
+
+**Opción 2: Pregunta interactiva**
+
+Si no defines la variable `IDE`, el script te preguntará qué IDE deseas usar:
+
+```bash
+make dev-init
+# Te mostrará un menú para seleccionar entre Cursor, VS Code o auto-detectar
+```
+
+**Opción 3: Abrir IDE manualmente después**
+
+Si prefieres abrir el IDE manualmente después de `dev-init`:
+
+```bash
+make dev-init
+# ... espera a que termine ...
+make dev-open  # Abre el IDE
+```
+
+**Nota:** Asegúrate de tener instalada la extensión "Dev Containers" en tu IDE. El IDE detectará automáticamente el devcontainer y te preguntará si deseas abrirlo.
+
+#### Abrir en IDE con Dev Container
+
+**Automáticamente (recomendado):**
+- Ejecuta `make dev-init` y el IDE se abrirá automáticamente
+- El IDE detectará el devcontainer y te preguntará si deseas abrirlo
+
+**Manualmente:**
 1. **Abrir en Dev Container:**
-   - Usa VS Code con la extensión "Dev Containers"
+   - Abre Cursor o VS Code con la extensión "Dev Containers" instalada
    - Abre la carpeta del proyecto
-   - Ejecuta el comando: `Remote-Containers: Reopen in Container`
+   - Ejecuta el comando: `Dev Containers: Reopen in Container` (Cmd+Shift+P / Ctrl+Shift+P)
 
 2. **Servicios incluidos (se inician automáticamente):**
    - **API (Go)**: Puerto 8080 con hot reload (Air)
      - Se inicia automáticamente al abrir el devcontainer
      - Usa Air para recarga automática al modificar archivos Go
      - Disponible en: `http://localhost:8080`
-   - **Frontend (Vue 3)**: Puerto 3000 con hot reload (Vite)
+   - **Frontend (Vue 3)**: Puerto 3001 con hot reload (Vite)
      - Se inicia automáticamente al abrir el devcontainer
      - Usa Vite para recarga automática al modificar archivos Vue/TypeScript
-     - Disponible en: `http://localhost:3000`
+     - Disponible en: `http://localhost:3001`
    - **CockroachDB**: Puerto 26257 (SQL) y 8081 (Web UI)
      - Se inicia automáticamente al abrir el devcontainer
      - Base de datos: `defaultdb`
@@ -138,7 +185,7 @@ npm install
 ```bash
 npm run dev
 ```
-El frontend estará disponible en `http://localhost:3000`
+El frontend estará disponible en `http://localhost:3001`
 
 3. **Ejecutar el backend:**
 ```bash
@@ -213,7 +260,7 @@ El script `postCreate.sh` se ejecuta automáticamente para:
 - Esperar a que CockroachDB esté listo
 
 ### Puertos
-- **Frontend**: Puerto 3000 - `http://localhost:3000`
+- **Frontend**: Puerto 3001 - `http://localhost:3001`
 - **Backend**: Puerto 8080 - `http://localhost:8080`
 - **CockroachDB SQL**: Puerto 26257
 - **CockroachDB Web UI**: Puerto 8081 - `http://localhost:8081`
@@ -230,7 +277,7 @@ curl http://localhost:8080/hello
 # Debería responder: {"message":"Hello from Go API"}
 
 # Verificar frontend (desde el navegador)
-# Abre: http://localhost:3000
+# Abre: http://localhost:3001
 ```
 
 ### Conexión a CockroachDB
@@ -254,7 +301,7 @@ postgresql://root@localhost:26257/defaultdb?sslmode=disable
 ```bash
 # Verificar que los servicios están corriendo
 curl http://localhost:8080/health  # Backend
-curl http://localhost:3000          # Frontend
+curl http://localhost:3001          # Frontend
 
 # Si necesitas reiniciar el API manualmente (ya está corriendo automáticamente)
 cd /workspace/api && air -c .air.toml
@@ -347,7 +394,7 @@ Si recibes un error de que el puerto está en uso:
 1. **Verificar qué proceso está usando el puerto:**
    ```bash
    # En Linux/Mac
-   lsof -i :3000  # Para frontend
+   lsof -i :3001  # Para frontend
    lsof -i :8080  # Para backend
    ```
 

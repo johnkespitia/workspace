@@ -29,8 +29,43 @@ func RunMigrations() error {
 	}
 
 	for _, migration := range migrations {
-		if _, err := db.Exec(migration.SQL); err != nil {
-			return fmt.Errorf("failed to execute migration %s: %w", migration.Filename, err)
+		// Dividir el SQL en statements individuales y ejecutarlos uno por uno
+		// Esto es necesario porque algunos drivers/SGBD requieren statements separados
+		statements := splitSQLStatements(migration.SQL)
+		
+		for i, statement := range statements {
+			statement = strings.TrimSpace(statement)
+			if statement == "" {
+				continue // Saltar líneas vacías
+			}
+			
+			// Saltar comentarios de línea completa
+			if strings.HasPrefix(statement, "--") {
+				continue
+			}
+			
+			// Ejecutar el statement
+			// Si es un trigger o función de trigger y falla, solo mostrar un warning (CockroachDB puede no soportarlos)
+			_, err := db.Exec(statement)
+			if err != nil {
+				upperStmt := strings.ToUpper(statement)
+				// Detectar si es un CREATE TRIGGER o CREATE FUNCTION relacionado con triggers
+				isTrigger := strings.Contains(upperStmt, "CREATE TRIGGER")
+				isTriggerFunction := strings.Contains(upperStmt, "CREATE") && 
+				                     strings.Contains(upperStmt, "FUNCTION") && 
+				                     (strings.Contains(upperStmt, "UPDATE_UPDATED_AT") || 
+				                      strings.Contains(upperStmt, "TRIGGER") ||
+				                      strings.Contains(upperStmt, "RETURNS TRIGGER"))
+				
+				if isTrigger || isTriggerFunction {
+					fmt.Printf("⚠️  Warning: Trigger/Function creation failed (may not be supported in this CockroachDB version): %v\n", err)
+					fmt.Printf("   You may need to update 'updated_at' manually in your code.\n")
+					fmt.Printf("   Continuing without trigger...\n")
+					continue
+				}
+				return fmt.Errorf("failed to execute migration %s (statement %d): %w\nStatement: %s", 
+					migration.Filename, i+1, err, statement)
+			}
 		}
 		fmt.Printf("✓ Migration %s executed successfully\n", migration.Filename)
 	}
@@ -49,7 +84,7 @@ func CheckMigrations() (bool, error) {
 	var exists bool
 	query := `
 		SELECT EXISTS (
-			SELECT FROM information_schema.tables 
+			SELECT 1 FROM information_schema.tables 
 			WHERE table_schema = 'public' 
 			AND table_name = 'stocks'
 		)
@@ -134,4 +169,89 @@ func loadMigrations() ([]MigrationInfo, error) {
 	})
 
 	return migrations, nil
+}
+
+// splitSQLStatements divide un string SQL en statements individuales
+// separados por punto y coma
+func splitSQLStatements(sql string) []string {
+	var statements []string
+	var current strings.Builder
+	inString := false
+	stringChar := byte(0)
+	inDollarQuote := false
+	dollarTag := ""
+	
+	lines := strings.Split(sql, "\n")
+	
+	for _, line := range lines {
+		// Saltar comentarios de línea completa
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "--") {
+			continue
+		}
+		
+		for i := 0; i < len(line); i++ {
+			char := line[i]
+			
+			// Manejar comillas simples y dobles
+			if !inDollarQuote {
+				if char == '\'' || char == '"' {
+					if !inString {
+						inString = true
+						stringChar = char
+					} else if char == stringChar {
+						// Verificar que no sea un escape
+						if i == 0 || line[i-1] != '\\' {
+							inString = false
+						}
+					}
+				}
+			}
+			
+			// Manejar dollar quoting ($$ ... $$)
+			if char == '$' && !inString {
+				if i+1 < len(line) {
+					// Buscar el tag del dollar quote
+					j := i + 1
+					for j < len(line) && line[j] != '$' {
+						j++
+					}
+					if j < len(line) {
+						tag := line[i+1 : j]
+						if !inDollarQuote {
+							dollarTag = tag
+							inDollarQuote = true
+						} else if tag == dollarTag {
+							inDollarQuote = false
+							dollarTag = ""
+						}
+					}
+				}
+			}
+			
+			current.WriteByte(char)
+			
+			// Si encontramos un punto y coma fuera de strings, es el final de un statement
+			if char == ';' && !inString && !inDollarQuote {
+				stmt := strings.TrimSpace(current.String())
+				if stmt != "" {
+					statements = append(statements, stmt)
+				}
+				current.Reset()
+			}
+		}
+		
+		// Agregar salto de línea si no estamos al final de un statement
+		if current.Len() > 0 {
+			current.WriteByte('\n')
+		}
+	}
+	
+	// Agregar el último statement si no termina con punto y coma
+	stmt := strings.TrimSpace(current.String())
+	if stmt != "" {
+		statements = append(statements, stmt)
+	}
+	
+	return statements
 }

@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue';
-import { useApi } from './useApi';
-import type { Stock, StockFilter, StockSort } from '@/utils/api';
+import { ref, computed } from "vue";
+import { useApi } from "./useApi";
+import type { Stock, StockFilter, StockSort } from "@/utils/api";
 
 export function useStock() {
   const api = useApi();
@@ -10,36 +10,61 @@ export function useStock() {
   const currentPage = ref(1);
   const pageSize = ref(50);
   const filter = ref<StockFilter>({});
-  const sort = ref<StockSort>({ field: 'ticker', direction: 'asc' });
+  const sort = ref<StockSort>({ field: "TICKER", direction: "ASC" });
 
-  const totalPages = computed(() => Math.ceil(totalCount.value / pageSize.value));
+  const totalPages = computed(() =>
+    Math.ceil(totalCount.value / pageSize.value)
+  );
 
   const loadStocks = async (
     newFilter?: StockFilter,
     newSort?: StockSort,
     page: number = 1
   ) => {
-    if (newFilter) filter.value = newFilter;
-    if (newSort) sort.value = newSort;
-    currentPage.value = page;
+    try {
+      if (newFilter) filter.value = newFilter;
+      if (newSort) sort.value = newSort;
+      currentPage.value = page;
 
-    const offset = (page - 1) * pageSize.value;
-    const result = await api.fetchStocks(filter.value, sort.value, pageSize.value, offset);
-    
-    stocks.value = result.stocks;
-    totalCount.value = result.totalCount;
+      const offset = (page - 1) * pageSize.value;
+      const result = await api.fetchStocks(
+        filter.value,
+        sort.value,
+        pageSize.value,
+        offset
+      );
+
+      stocks.value = result.stocks;
+      totalCount.value = result.totalCount;
+    } catch (error) {
+      console.error("Error loading stocks:", error);
+      // No fallar completamente, solo mostrar lista vacía
+      stocks.value = [];
+      totalCount.value = 0;
+    }
   };
 
   const loadStock = async (ticker: string) => {
-    currentStock.value = await api.fetchStock(ticker);
-    return currentStock.value;
+    try {
+      currentStock.value = await api.fetchStock(ticker);
+      return currentStock.value;
+    } catch (error) {
+      console.error("Error loading stock:", error);
+      currentStock.value = null;
+      return null;
+    }
   };
 
   const searchStocks = async (query: string) => {
+    // Para búsqueda, usar companyName (búsqueda parcial) en lugar de ticker (búsqueda exacta)
+    // Si el query parece un ticker (corto y en mayúsculas), usar ticker, sino companyName
+    const isLikelyTicker = query.length <= 10 && query === query.toUpperCase();
     const searchFilter: StockFilter = {
       ...filter.value,
-      ticker: query || undefined,
-      companyName: query || undefined,
+      ...(isLikelyTicker 
+        ? { ticker: query || undefined }
+        : { companyName: query || undefined }
+      ),
     };
     await loadStocks(searchFilter, sort.value, 1);
   };

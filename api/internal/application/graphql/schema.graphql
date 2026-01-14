@@ -1,0 +1,108 @@
+# Schema GraphQL para el Sistema de Información de Acciones
+
+scalar Time
+
+# ============================================
+# Tipos de Dominio
+# ============================================
+
+type Stock {
+  id: ID!
+  ticker: String!
+  companyName: String!
+  brokerage: String
+  action: String
+  ratingFrom: String!
+  ratingTo: String!
+  targetFrom: Float!
+  targetTo: Float!
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+type Recommendation {
+  stock: Stock!
+  score: Float!
+  priceChange: Float!
+  ratingScore: Float!
+  actionScore: Float!
+}
+
+# ============================================
+# Inputs
+# ============================================
+
+input StockFilter {
+  ticker: String
+  companyName: String
+  ratings: [String!]
+  action: String
+}
+
+input StockSort {
+  field: StockSortField!
+  direction: SortDirection!
+}
+
+enum StockSortField {
+  TICKER
+  COMPANY_NAME
+  RATING_TO
+  TARGET_TO
+  CREATED_AT
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+# ============================================
+# Connections y Paginación
+# ============================================
+
+type StockConnection {
+  stocks: [Stock!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+# ============================================
+# Queries
+# ============================================
+
+type Query {
+  # Obtener lista de stocks con filtros, ordenamiento y paginación
+  stocks(
+    filter: StockFilter
+    sort: StockSort
+    limit: Int = 50
+    offset: Int = 0
+  ): StockConnection!
+
+  # Obtener un stock por ticker
+  stock(ticker: String!): Stock
+
+  # Obtener recomendaciones de inversión
+  recommendations(limit: Int = 10): [Recommendation!]!
+}
+
+# ============================================
+# Mutations
+# ============================================
+
+type Mutation {
+  # Sincronizar stocks desde la API externa
+  syncStocks: SyncStocksResult!
+}
+
+type SyncStocksResult {
+  success: Boolean!
+  message: String!
+  stocksSynced: Int!
+}
