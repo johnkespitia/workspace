@@ -479,4 +479,13 @@ export const useStockStore = defineStore('stock', {
 
 ---
 
-**Última actualización**: [Fecha]
+## 📚 Documentación Relacionada
+
+- [Manual del Desarrollador](./DEVELOPER_MANUAL.md)
+- [GraphQL API Reference](./GRAPHQL_API_REFERENCE.md)
+- [Algoritmos](./ALGORITHMS.md)
+- [Frontend](./FRONTEND.md)
+
+---
+
+**Última actualización**: 2026-01-15

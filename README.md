@@ -6,12 +6,41 @@ Sistema completo para recuperar, almacenar y visualizar información de acciones
 
 ## 📚 Documentación
 
-- **[Plan de Acción](./PLAN_DE_ACCION.md)**: Plan detallado por fases de implementación
-- **[Arquitectura](./docs/ARCHITECTURE.md)**: Arquitectura DDD, capas y flujos de datos
-- **[Algoritmos](./docs/ALGORITHMS.md)**: Algoritmos de recomendación, búsqueda y optimizaciones
-- **[HOCs en Vue 3](./docs/HOCS_VUE3.md)**: Guía completa de Higher Order Components (NO hooks)
-- **[Flujos del Sistema](./docs/FLUJOS.md)**: Diagramas de flujo de todos los procesos
-- **[Resumen Ejecutivo](./docs/RESUMEN_EJECUTIVO.md)**: Visión general del proyecto
+La documentación está organizada para facilitar la transferencia de conocimiento, desde la visión general hasta los detalles técnicos.
+
+### 🎯 Para Empezar
+
+Si eres nuevo en el proyecto, comienza por estos documentos en orden:
+
+1. **[Resumen Ejecutivo](./docs/RESUMEN_EJECUTIVO.md)** - Visión general del proyecto, objetivos, stack tecnológico y características principales
+2. **[Manual del Desarrollador](./docs/DEVELOPER_MANUAL.md)** - Guía completa para configurar el entorno, entender la estructura del proyecto y comenzar a desarrollar
+
+### 🏗️ Arquitectura y Diseño
+
+Para entender cómo está construido el sistema:
+
+3. **[Arquitectura](./docs/ARCHITECTURE.md)** - Arquitectura DDD, capas, estructura y principios de diseño
+4. **[Algoritmos](./docs/ALGORITHMS.md)** - Algoritmos de recomendación, búsqueda y optimizaciones implementadas
+
+### 💻 Desarrollo Práctico
+
+Documentación para el día a día del desarrollo:
+
+5. **[Frontend](./docs/FRONTEND.md)** - Guía completa del frontend: componentes, HOCs, composables, stores y más
+6. **[GraphQL API Reference](./docs/GRAPHQL_API_REFERENCE.md)** - Referencia completa de la API GraphQL: queries, mutations, filtros y ejemplos
+7. **[Testing](./docs/TESTING.md)** - Estrategia de testing, cómo escribir tests y ejecutarlos (backend y frontend)
+
+### ⚙️ Configuración e Infraestructura
+
+Para configurar y entender el entorno de desarrollo:
+
+8. **[Dev Container](./docs/DEVCONTAINER.md)** - Guía del dev container: configuración, scripts y solución de problemas
+9. **[Infraestructura](./docs/INFRASTRUCTURE.md)** - Servicios, Docker, base de datos y configuración de red
+10. **[Makefile](./docs/MAKEFILE.md)** - Todos los comandos disponibles y cómo usarlos
+
+### 📋 Referencia Histórica
+
+11. **[Plan de Acción](./docs/PLAN_DE_ACCION.md)** - Plan detallado por fases de implementación (referencia histórica)
 
 ---
 
@@ -251,16 +280,23 @@ cockroach start-single-node --insecure --http-addr=localhost:8081
 │   │   ├── stores/               # Stores de Pinia
 │   │   └── composables/          # Composables Vue
 │   └── .storybook/               # Configuración Storybook
-├── docs/                         # Documentación general
+├── docs/                         # Documentación completa del proyecto
+│   ├── RESUMEN_EJECUTIVO.md      # Visión general (empezar aquí)
+│   ├── DEVELOPER_MANUAL.md       # Manual del desarrollador
 │   ├── ARCHITECTURE.md           # Arquitectura DDD
 │   ├── ALGORITHMS.md             # Algoritmos y optimizaciones
-│   └── RESUMEN_EJECUTIVO.md      # Resumen ejecutivo
+│   ├── FRONTEND.md               # Guía del frontend
+│   ├── GRAPHQL_API_REFERENCE.md  # Referencia de la API
+│   ├── TESTING.md                # Guía de testing
+│   ├── DEVCONTAINER.md           # Configuración del dev container
+│   ├── INFRASTRUCTURE.md         # Infraestructura y servicios
+│   ├── MAKEFILE.md               # Comandos del Makefile
+│   └── PLAN_DE_ACCION.md         # Plan de acción (referencia histórica)
 ├── .devcontainer/                # Configuración del devcontainer
 │   ├── devcontainer.json
 │   ├── docker-compose.yml
-│   └── README.md
-├── PLAN_DE_ACCION.md             # Plan de acción detallado
-└── README.md
+│   └── Dockerfile.*
+└── README.md                     # Este archivo
 ```
 
 ## Desarrollo
@@ -345,23 +381,30 @@ docker logs <container-id-frontend>  # Reemplaza con el ID del contenedor
 
 ## 🚀 Inicio Rápido
 
-### Desarrollo del Sistema de Acciones
+### Para Nuevos Desarrolladores
 
-1. **Revisar la documentación**:
+Sigue estos pasos para comenzar a trabajar en el proyecto:
 
-   - Leer [Plan de Acción](./PLAN_DE_ACCION.md) para entender las fases
-   - Revisar [Arquitectura](./docs/ARCHITECTURE.md) para entender la estructura DDD
-   - Consultar [Algoritmos](./docs/ALGORITHMS.md) para entender las optimizaciones
+1. **Leer la documentación inicial**:
+   - Comienza con el [Resumen Ejecutivo](./docs/RESUMEN_EJECUTIVO.md) para entender el proyecto
+   - Revisa el [Manual del Desarrollador](./docs/DEVELOPER_MANUAL.md) para configurar tu entorno
 
-2. **Configurar el entorno**:
+2. **Configurar el entorno de desarrollo**:
+   ```bash
+   # Inicializar el dev container (recomendado)
+   make dev-init
+   
+   # O seguir la guía en docs/DEVCONTAINER.md
+   ```
 
-   - El devcontainer ya está configurado con todos los servicios
-   - CockroachDB se inicia automáticamente
-   - Backend y Frontend tienen hot reload
+3. **Entender la arquitectura**:
+   - Revisa [Arquitectura](./docs/ARCHITECTURE.md) para entender la estructura DDD
+   - Consulta [Algoritmos](./docs/ALGORITHMS.md) para entender las optimizaciones
 
-3. **Comenzar implementación**:
-   - Seguir las fases del plan de acción
-   - Empezar por Fase 1: Backend - Infraestructura
+4. **Comenzar a desarrollar**:
+   - Frontend: Consulta [Frontend](./docs/FRONTEND.md) para guías de desarrollo
+   - Backend: Consulta [GraphQL API Reference](./docs/GRAPHQL_API_REFERENCE.md) para la API
+   - Testing: Revisa [Testing](./docs/TESTING.md) para escribir y ejecutar tests
 
 ### API Externa
 
@@ -392,77 +435,71 @@ El proyecto incluye una página demo que muestra:
 - Conexión a CockroachDB
 - Hot reload para desarrollo rápido
 
-## Solución de Problemas
+## 🆘 Solución de Problemas
 
-### Los servicios no se inician automáticamente
+Para problemas comunes, consulta la documentación específica:
 
-Si los servicios no se inician automáticamente al abrir el devcontainer:
+- **Problemas con el dev container**: Ver [Dev Container](./docs/DEVCONTAINER.md#solución-de-problemas)
+- **Problemas con servicios**: Ver [Infraestructura](./docs/INFRASTRUCTURE.md#mantenimiento)
+- **Problemas con comandos**: Ver [Makefile](./docs/MAKEFILE.md#ejemplos-de-uso)
 
-1. **Reconstruir el contenedor:**
+### Comandos de Diagnóstico Rápido
 
-   - Presiona `Ctrl+Shift+P` (o `Cmd+Shift+P` en Mac)
-   - Ejecuta: `Dev Containers: Rebuild Container`
+```bash
+# Verificar estado de servicios
+make dev-status
 
-2. **Verificar que los contenedores estén corriendo:**
+# Verificar salud de servicios
+make dev-health
 
-   ```bash
-   # Desde fuera del contenedor (en tu máquina local)
-   docker-compose -f .devcontainer/docker-compose.yml ps
-   ```
+# Diagnóstico completo
+make dev-diagnose
 
-3. **Iniciar servicios manualmente (si es necesario):**
+# Ver logs
+make dev-logs
+```
 
-   ```bash
-   # Backend (normalmente ya está corriendo)
-   cd /workspace/api && air -c .air.toml
+## 🛠️ Herramientas y Extensiones
 
-   # Frontend (normalmente ya está corriendo)
-   cd /workspace/frontend && npm run dev
-   ```
+### Extensiones Preconfiguradas en Dev Container
 
-### Error: Puerto ya en uso
+Las siguientes extensiones están preconfiguradas automáticamente:
 
-Si recibes un error de que el puerto está en uso:
+- **Go** (golang.Go) - Soporte para Go
+- **Vue Language Features** (Vue.volar) - Soporte para Vue 3
+- **TypeScript Vue Plugin** (Vue.vscode-typescript-vue-plugin) - TypeScript en Vue
+- **ESLint** - Linting de código
+- **Prettier** - Formateo de código
+- **Tailwind CSS IntelliSense** - Autocompletado de Tailwind
 
-1. **Verificar qué proceso está usando el puerto:**
+### Comandos Útiles del Makefile
 
-   ```bash
-   # En Linux/Mac
-   lsof -i :3001  # Para frontend
-   lsof -i :8080  # Para backend
-   ```
+Para ver todos los comandos disponibles:
 
-2. **Detener procesos duplicados:**
-   ```bash
-   pkill -f "vite"      # Para frontend
-   pkill -f "go run"    # Para backend
-   ```
+```bash
+make help
+```
 
-### El backend no compila
+**Comandos más usados**:
+- `make dev-init` - Inicializar proyecto
+- `make dev-status` - Ver estado de servicios
+- `make dev-health` - Verificar salud de servicios
+- `make dev-logs` - Ver logs en tiempo real
 
-Si el backend tiene errores de compilación:
+Ver [Makefile](./docs/MAKEFILE.md) para documentación completa de todos los comandos.
 
-1. **Verificar que las dependencias estén instaladas:**
+---
 
-   ```bash
-   cd /workspace/api
-   go mod download
-   go mod tidy
-   ```
+## 📖 Guía de Lectura Recomendada
 
-2. **Verificar errores de sintaxis:**
-   ```bash
-   cd /workspace/api
-   go build ./cmd/main.go
-   ```
+**Para nuevos desarrolladores**, sigue este orden de lectura:
 
-## Extensiones de VS Code Recomendadas
+1. **[Resumen Ejecutivo](./docs/RESUMEN_EJECUTIVO.md)** (10 min) - Entender qué es el proyecto
+2. **[Manual del Desarrollador](./docs/DEVELOPER_MANUAL.md)** (30 min) - Configurar y comenzar
+3. **[Arquitectura](./docs/ARCHITECTURE.md)** (20 min) - Entender la estructura
+4. **[Frontend](./docs/FRONTEND.md)** o **[GraphQL API Reference](./docs/GRAPHQL_API_REFERENCE.md)** - Según tu área de trabajo
 
-- Go (golang.Go)
-- Vue Language Features (Vue.volar)
-- TypeScript Vue Plugin (Vue.vscode-typescript-vue-plugin)
-- ESLint
-- Prettier
-- Tailwind CSS IntelliSense
-
-Todas estas extensiones están preconfiguradas en el devcontainer.
+**Para referencia rápida**:
+- Comandos: [Makefile](./docs/MAKEFILE.md)
+- API: [GraphQL API Reference](./docs/GRAPHQL_API_REFERENCE.md)
+- Configuración: [Dev Container](./docs/DEVCONTAINER.md) y [Infraestructura](./docs/INFRASTRUCTURE.md)
