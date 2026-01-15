@@ -5,6 +5,7 @@
 ### Domain-Driven Design (DDD)
 
 El sistema está estructurado siguiendo los principios de DDD para garantizar:
+
 - **Desacoplamiento**: Cada capa tiene responsabilidades claras
 - **Testabilidad**: Fácil de testear con mocks
 - **Mantenibilidad**: Código organizado y fácil de entender
@@ -214,6 +215,7 @@ func (h *GraphQLHandler) ResolveStocks(params graphql.ResolveParams) (interface{
 **Complejidad**: O(n log n) donde n = número de stocks
 
 **Pseudocódigo**:
+
 ```
 1. Filtrar stocks con rating positivo (Buy, Strong Buy, Speculative Buy)
 2. Para cada stock:
@@ -229,13 +231,14 @@ func (h *GraphQLHandler) ResolveStocks(params graphql.ResolveParams) (interface{
 ```
 
 **Implementación Go**:
+
 ```go
 func (s *RecommendationService) GetRecommendations(ctx context.Context, limit int) ([]*Recommendation, error) {
     stocks, err := s.repo.FindAll(ctx, Filter{Rating: []string{"Buy", "Strong Buy"}}, Sort{})
     if err != nil {
         return nil, err
     }
-    
+
     recommendations := make([]*Recommendation, 0, len(stocks))
     for _, stock := range stocks {
         score := s.calculateScore(stock)
@@ -244,15 +247,15 @@ func (s *RecommendationService) GetRecommendations(ctx context.Context, limit in
             Score: score,
         })
     }
-    
+
     sort.Slice(recommendations, func(i, j int) bool {
         return recommendations[i].Score > recommendations[j].Score
     })
-    
+
     if len(recommendations) > limit {
         recommendations = recommendations[:limit]
     }
-    
+
     return recommendations, nil
 }
 ```
@@ -262,6 +265,7 @@ func (s *RecommendationService) GetRecommendations(ctx context.Context, limit in
 **Complejidad**: O(n) donde n = número de stocks en memoria (con índices DB: O(log n))
 
 **Estrategia**:
+
 - Búsqueda por índice en base de datos (ticker, company_name)
 - Filtrado en memoria para múltiples criterios
 - Cache de resultados para búsquedas frecuentes
@@ -276,21 +280,21 @@ func (s *RecommendationService) GetRecommendations(ctx context.Context, limit in
 func (c *KarenAIClient) FetchAllStocks(ctx context.Context) ([]*Stock, error) {
     var allStocks []*Stock
     nextPage := ""
-    
+
     for {
         response, err := c.FetchStocks(ctx, nextPage)
         if err != nil {
             return nil, err
         }
-        
+
         allStocks = append(allStocks, response.Stocks...)
-        
+
         if response.NextPage == "" {
             break
         }
         nextPage = response.NextPage
     }
-    
+
     return allStocks, nil
 }
 ```
@@ -345,27 +349,27 @@ En Vue 3, los HOCs se implementan de la siguiente manera:
 
 ```typescript
 // Ejemplo: withLoading HOC
-import { defineComponent, h, Component } from 'vue';
+import { defineComponent, h, Component } from "vue";
 
 export function withLoading<T extends Component>(WrappedComponent: T) {
   return defineComponent({
-    name: `withLoading(${WrappedComponent.name || 'Component'})`,
+    name: `withLoading(${WrappedComponent.name || "Component"})`,
     props: {
       loading: {
         type: Boolean,
-        default: false
-      }
+        default: false,
+      },
     },
     setup(props, { slots, attrs }) {
       return () => {
         if (props.loading) {
-          return h('div', { class: 'loading-container' }, [
-            h('div', { class: 'spinner' }, 'Cargando...')
+          return h("div", { class: "loading-container" }, [
+            h("div", { class: "spinner" }, "Cargando..."),
           ]);
         }
         return h(WrappedComponent, attrs, slots);
       };
-    }
+    },
   });
 }
 
@@ -374,10 +378,12 @@ const StockListWithLoading = withLoading(StockList);
 ```
 
 **Diferencia con Composables**:
+
 - **HOCs**: Envuelven componentes, modifican su estructura/renderizado
 - **Composables**: Proporcionan lógica reutilizable (similar a hooks de React), se usan dentro de `setup()`
 
 **HOCs a implementar**:
+
 - `withLoading`: Muestra spinner mientras carga
 - `withError`: Maneja y muestra errores
 - `withPagination`: Agrega lógica de paginación
@@ -404,20 +410,20 @@ App
 
 ```typescript
 // stores/stock.ts
-export const useStockStore = defineStore('stock', {
+export const useStockStore = defineStore("stock", {
   state: () => ({
     stocks: [] as Stock[],
     loading: false,
     error: null as string | null,
     cache: new Map<string, Stock[]>(),
   }),
-  
+
   actions: {
     async fetchStocks(filter: Filter) {
       // Con cache y deduplicación
-    }
-  }
-})
+    },
+  },
+});
 ```
 
 ---
@@ -427,11 +433,13 @@ export const useStockStore = defineStore('stock', {
 ### Backend
 
 1. **Database**:
+
    - Índices en columnas frecuentemente consultadas
    - Connection pooling
    - Query optimization
 
 2. **API**:
+
    - DataLoader para evitar N+1 queries
    - Response caching
    - Pagination en GraphQL
@@ -444,11 +452,13 @@ export const useStockStore = defineStore('stock', {
 ### Frontend
 
 1. **Rendering**:
+
    - Virtual scrolling para listas grandes
    - Lazy loading de componentes
    - Code splitting por ruta
 
 2. **API Calls**:
+
    - Request deduplication
    - Cache en memoria con TTL
    - Debounce en búsquedas

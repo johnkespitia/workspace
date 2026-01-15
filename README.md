@@ -386,18 +386,21 @@ docker logs <container-id-frontend>  # Reemplaza con el ID del contenedor
 Sigue estos pasos para comenzar a trabajar en el proyecto:
 
 1. **Leer la documentación inicial**:
+
    - Comienza con el [Resumen Ejecutivo](./docs/RESUMEN_EJECUTIVO.md) para entender el proyecto
    - Revisa el [Manual del Desarrollador](./docs/DEVELOPER_MANUAL.md) para configurar tu entorno
 
 2. **Configurar el entorno de desarrollo**:
+
    ```bash
    # Inicializar el dev container (recomendado)
    make dev-init
-   
+
    # O seguir la guía en docs/DEVCONTAINER.md
    ```
 
 3. **Entender la arquitectura**:
+
    - Revisa [Arquitectura](./docs/ARCHITECTURE.md) para entender la estructura DDD
    - Consulta [Algoritmos](./docs/ALGORITHMS.md) para entender las optimizaciones
 
@@ -481,6 +484,7 @@ make help
 ```
 
 **Comandos más usados**:
+
 - `make dev-init` - Inicializar proyecto
 - `make dev-status` - Ver estado de servicios
 - `make dev-health` - Verificar salud de servicios
@@ -500,6 +504,7 @@ Ver [Makefile](./docs/MAKEFILE.md) para documentación completa de todos los com
 4. **[Frontend](./docs/FRONTEND.md)** o **[GraphQL API Reference](./docs/GRAPHQL_API_REFERENCE.md)** - Según tu área de trabajo
 
 **Para referencia rápida**:
+
 - Comandos: [Makefile](./docs/MAKEFILE.md)
 - API: [GraphQL API Reference](./docs/GRAPHQL_API_REFERENCE.md)
 - Configuración: [Dev Container](./docs/DEVCONTAINER.md) y [Infraestructura](./docs/INFRASTRUCTURE.md)

@@ -16,6 +16,7 @@ make dev-init
 ```
 
 Este comando:
+
 1. Construye las imágenes Docker
 2. Inicia todos los servicios
 3. Abre automáticamente el IDE con el devcontainer
@@ -53,17 +54,20 @@ make dev-health
 ### devcontainer.json
 
 **Servicios principales**:
+
 - `api`: Contenedor principal (backend Go)
 - `frontend`: Servidor de desarrollo Vue 3
 - `cockroachdb`: Base de datos
 
 **Puertos forwardeados**:
+
 - `3001`: Frontend
 - `6006`: Storybook
 - `8080`: Backend API
 - `26257`: CockroachDB SQL
 
 **Extensiones preinstaladas**:
+
 - Go (golang.Go)
 - Vue Language Features (Vue.volar)
 - TypeScript
@@ -88,6 +92,7 @@ Define tres servicios:
 Se ejecuta automáticamente después de crear el contenedor:
 
 **Funcionalidades**:
+
 - Instala herramientas de Go (gopls, delve, air)
 - Instala dependencias del frontend (`npm install`)
 - Descarga módulos de Go (`go mod download`)
@@ -99,6 +104,7 @@ Se ejecuta automáticamente después de crear el contenedor:
 Inicia el servidor API automáticamente:
 
 **Funcionalidades**:
+
 - Verifica que CockroachDB esté listo
 - Inicia `air` para hot reload
 - Redirige logs a `/tmp/api.log`
@@ -108,6 +114,7 @@ Inicia el servidor API automáticamente:
 Inicia Vite y Storybook en paralelo:
 
 **Funcionalidades**:
+
 - Verifica dependencias instaladas
 - Instala `concurrently` si es necesario
 - Inicia `npm run dev` y `npm run storybook` en paralelo

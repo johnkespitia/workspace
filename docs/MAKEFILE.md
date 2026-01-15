@@ -25,11 +25,13 @@ make dev-init
 ```
 
 **Funcionalidades**:
+
 - Construye las imágenes Docker
 - Inicia todos los servicios
 - Abre el IDE (Cursor o VS Code) con el devcontainer
 
 **Configurar IDE**:
+
 ```bash
 # Usar Cursor
 export IDE=cursor
@@ -57,6 +59,7 @@ make dev-up
 ```
 
 **Servicios iniciados**:
+
 - Frontend: http://localhost:3001
 - Storybook: http://localhost:6006
 - Backend: http://localhost:8080
@@ -119,6 +122,7 @@ make dev-status
 ```
 
 **Información mostrada**:
+
 - Estado de contenedores
 - Puertos expuestos
 - URLs de acceso
@@ -132,6 +136,7 @@ make dev-health
 ```
 
 **Verificaciones**:
+
 - Backend responde en `/health`
 - Frontend accesible
 - Storybook accesible
@@ -184,6 +189,7 @@ make dev-diagnose
 ```
 
 **Información mostrada**:
+
 - Estado de contenedores
 - Últimos logs del frontend
 - Puertos en uso
@@ -198,6 +204,7 @@ make dev-diagnose-frontend
 ```
 
 **Información mostrada**:
+
 - Estado del contenedor
 - Últimos logs
 - Puertos en uso
@@ -218,6 +225,7 @@ make dev-shell
 ```
 
 **Uso**:
+
 ```bash
 # Dentro del shell
 cd /workspace/api
@@ -233,6 +241,7 @@ make dev-shell-frontend
 ```
 
 **Uso**:
+
 ```bash
 # Dentro del shell
 cd /workspace/frontend
@@ -258,6 +267,7 @@ make dev-install-frontend
 ```
 
 **Útil cuando**:
+
 - Se agregaron nuevas dependencias
 - `node_modules` está corrupto
 - Reinstalación necesaria
@@ -273,6 +283,7 @@ make dev-clean
 **⚠️ ADVERTENCIA**: Esto elimina todos los datos de CockroachDB.
 
 **Útil cuando**:
+
 - Necesitas empezar desde cero
 - Hay problemas con volúmenes
 - Limpieza completa necesaria
@@ -338,6 +349,7 @@ El Makefile detecta automáticamente:
 - **IDE**: Usa variable de entorno `IDE` o pregunta interactivamente
 
 **Variables configurables**:
+
 ```makefile
 PROJECT_NAME := go-react-test-devcontainer
 DEV_CONTAINER_DIR := .devcontainer

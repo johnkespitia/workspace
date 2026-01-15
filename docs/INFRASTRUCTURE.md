@@ -34,13 +34,13 @@ Este documento describe la infraestructura del proyecto, incluyendo servicios, c
 
 ### Puertos
 
-| Servicio | Puerto Interno | Puerto Host | Descripción |
-|----------|----------------|-------------|-------------|
-| Frontend | 3000 | 3001 | Servidor de desarrollo Vite |
-| Storybook | 6006 | 6006 | Documentación de componentes |
-| Backend API | 8080 | 8080 | Servidor GraphQL |
-| CockroachDB SQL | 26257 | 26257 | Puerto SQL |
-| CockroachDB UI | 8080 | 8081 | Interfaz web |
+| Servicio        | Puerto Interno | Puerto Host | Descripción                  |
+| --------------- | -------------- | ----------- | ---------------------------- |
+| Frontend        | 3000           | 3001        | Servidor de desarrollo Vite  |
+| Storybook       | 6006           | 6006        | Documentación de componentes |
+| Backend API     | 8080           | 8080        | Servidor GraphQL             |
+| CockroachDB SQL | 26257          | 26257       | Puerto SQL                   |
+| CockroachDB UI  | 8080           | 8081        | Interfaz web                 |
 
 ---
 
@@ -51,6 +51,7 @@ Este documento describe la infraestructura del proyecto, incluyendo servicios, c
 El proyecto usa **Dev Containers** para un entorno de desarrollo consistente.
 
 **Archivos principales**:
+
 - `.devcontainer/devcontainer.json` - Configuración del dev container
 - `.devcontainer/docker-compose.yml` - Orquestación de servicios
 - `.devcontainer/Dockerfile.api` - Imagen del backend
@@ -76,6 +77,7 @@ api:
 ```
 
 **Características**:
+
 - Hot reload con `air`
 - Acceso a Docker socket para comandos Docker
 - Variables de entorno preconfiguradas
@@ -97,6 +99,7 @@ frontend:
 ```
 
 **Características**:
+
 - Hot reload con Vite
 - Storybook integrado
 - Mapeo de puertos a localhost
@@ -116,6 +119,7 @@ cockroachdb:
 ```
 
 **Características**:
+
 - Modo single-node para desarrollo
 - Sin SSL (insecure mode)
 - Health check configurado
@@ -129,6 +133,7 @@ cockroachdb:
 **Versión**: v23.1 (latest)
 
 **Configuración**:
+
 - **Modo**: Single-node (desarrollo)
 - **SSL**: Deshabilitado (insecure)
 - **Base de datos**: `defaultdb`
@@ -139,11 +144,13 @@ cockroachdb:
 ### Conexión
 
 **Desde el contenedor**:
+
 ```
 postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
 ```
 
 **Desde el host**:
+
 ```
 postgresql://root@localhost:26257/defaultdb?sslmode=disable
 ```
@@ -153,12 +160,14 @@ postgresql://root@localhost:26257/defaultdb?sslmode=disable
 Las migraciones están en `api/internal/infrastructure/database/migrations/`.
 
 **Ejecutar migraciones**:
+
 ```bash
 cd api
 go run cmd/migrate/main.go
 ```
 
 **Estructura de migraciones**:
+
 ```
 migrations/
 ├── 001_create_stocks_table.sql
@@ -206,11 +215,11 @@ Los puertos se mapean explícitamente a `127.0.0.1` para evitar conflictos:
 
 ```yaml
 ports:
-  - "127.0.0.1:3001:3000"  # Frontend
-  - "127.0.0.1:6006:6006"  # Storybook
-  - "8080:8080"            # Backend
-  - "26257:26257"           # CockroachDB SQL
-  - "8081:8080"             # CockroachDB UI
+  - "127.0.0.1:3001:3000" # Frontend
+  - "127.0.0.1:6006:6006" # Storybook
+  - "8080:8080" # Backend
+  - "26257:26257" # CockroachDB SQL
+  - "8081:8080" # CockroachDB UI
 ```
 
 ---
@@ -249,6 +258,7 @@ VITE_GRAPHQL_ENDPOINT=http://localhost:8080/query
 ### Backend (Go)
 
 **Herramientas principales**:
+
 - Go 1.21+
 - Air (hot reload)
 - gqlgen (GraphQL)
@@ -260,6 +270,7 @@ Las herramientas se instalan automáticamente en `postCreate.sh`.
 ### Frontend (Node.js)
 
 **Herramientas principales**:
+
 - Node.js 18+
 - npm/yarn
 - Vite
@@ -276,12 +287,14 @@ Las dependencias se instalan automáticamente en `postCreate.sh`.
 ### Consideraciones
 
 1. **Producción**:
+
    - CockroachDB multi-node
    - SSL habilitado
    - Variables de entorno seguras
    - Health checks
 
 2. **CI/CD**:
+
    - Tests automáticos
    - Build de imágenes
    - Deployment automático

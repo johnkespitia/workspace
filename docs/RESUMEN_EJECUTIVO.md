@@ -11,18 +11,21 @@ Desarrollar un sistema completo que recupere información de acciones desde una 
 ### Funcionalidades Principales
 
 1. **Sincronización de Datos**
+
    - Conexión a API externa (`api.karenai.click`)
    - Almacenamiento en CockroachDB
    - Manejo de paginación
    - Sincronización periódica
 
 2. **API GraphQL**
+
    - Consulta de stocks
    - Búsqueda y filtrado
    - Recomendaciones de inversión
    - Mutaciones para sincronización
 
 3. **Interfaz de Usuario**
+
    - Lista de acciones con tabla interactiva
    - Búsqueda en tiempo real
    - Ordenamiento por columnas
@@ -45,12 +48,14 @@ Desarrollar un sistema completo que recupere información de acciones desde una 
 **Patrón**: Domain-Driven Design (DDD)
 
 **Capas**:
+
 - **Domain**: Entidades, Value Objects, Interfaces
 - **Application**: Servicios, DTOs, Casos de uso
 - **Infrastructure**: Repositorios, Clientes HTTP, Base de datos
 - **Presentation**: Handlers GraphQL, HTTP
 
 **Tecnologías**:
+
 - Go 1.21+
 - GraphQL (gqlgen o graphql-go)
 - CockroachDB (PostgreSQL compatible)
@@ -61,12 +66,14 @@ Desarrollar un sistema completo que recupere información de acciones desde una 
 **Patrón**: Component-Based Architecture con HOCs
 
 **Estructura**:
+
 - **Design System**: Componentes reusables documentados en Storybook
 - **HOCs**: Separación de lógica de negocio
 - **Composables**: Lógica reutilizable
 - **Stores (Pinia)**: Estado global
 
 **Tecnologías**:
+
 - Vue 3 (Composition API)
 - TypeScript
 - Pinia (State Management)
@@ -79,19 +86,23 @@ Desarrollar un sistema completo que recupere información de acciones desde una 
 ## 📊 Algoritmos y Complejidad
 
 ### Algoritmo de Recomendación
+
 - **Complejidad**: O(n log n)
 - **Estrategia**: Filtrado → Cálculo de scores → Ordenamiento → Top N
 - **Factores**: Cambio de precio (50%), Rating (30%), Acción (20%)
 
 ### Búsqueda
+
 - **Complejidad**: O(log n) con índices DB
 - **Optimización**: Índices en ticker, company_name, rating
 
 ### Sincronización
+
 - **Complejidad**: O(n) donde n = total de registros
 - **Optimización**: Batch upsert, paginación eficiente
 
 ### Frontend Optimizations
+
 - **Debounce**: O(1) por llamada
 - **Cache**: O(1) lookup
 - **Request Deduplication**: O(1) con Map
@@ -128,46 +139,53 @@ workspace/
 
 ## 🚀 Fases de Implementación
 
-### Fase 1: Backend - Infraestructura 
+### Fase 1: Backend - Infraestructura
+
 - Base de datos y migraciones
 - Entidades de dominio
 - Cliente API externa
 
-### Fase 2: Backend - GraphQL API 
+### Fase 2: Backend - GraphQL API
+
 - Schema GraphQL
 - Resolvers
 - Servicios de aplicación
 
-### Fase 3: Backend - Documentación 
+### Fase 3: Backend - Documentación
+
 - Swagger
 - Tests unitarios
 
-### Fase 4: Frontend - Design System 
+### Fase 4: Frontend - Design System
+
 - Storybook
 - Componentes base
 - Temas
 
-### Fase 5: Frontend - HOCs y Lógica 
+### Fase 5: Frontend - HOCs y Lógica
+
 - Higher Order Components
 - Composables
 - Optimizaciones
 
-### Fase 6: Frontend - Vistas 
+### Fase 6: Frontend - Vistas
+
 - Lista de acciones
 - Detalle
 - Recomendaciones
 
-### Fase 7: Optimización 
+### Fase 7: Optimización
+
 - Performance
 - Tests
 - Documentación final
-
 
 ---
 
 ## 🎨 Design System
 
 ### Componentes Base
+
 - **Button**: Variantes, estados, accesibilidad
 - **Input**: Búsqueda, validación
 - **Table**: Ordenamiento, paginación
@@ -175,11 +193,13 @@ workspace/
 - **ThemeToggle**: Cambio de tema
 
 ### Temas
+
 - **Light Theme**: Colores claros, alto contraste
 - **Dark Theme**: Colores oscuros, fácil lectura
 - **Tokens**: Colores, espaciado, tipografía
 
 ### Accesibilidad
+
 - ARIA labels
 - Navegación por teclado
 - WCAG AA compliance
@@ -200,16 +220,19 @@ workspace/
 ## 📈 Métricas de Éxito
 
 ### Performance
+
 - Carga inicial: < 2s
 - Búsqueda: < 300ms
 - API response: < 500ms
 
 ### Accesibilidad
+
 - Lighthouse score: > 90
 - WCAG AA compliance
 - Keyboard navigation completa
 
 ### Código
+
 - Test coverage: > 70%
 - Documentación completa
 - Código desacoplado
@@ -219,6 +242,7 @@ workspace/
 ## 🛠️ Stack Tecnológico Completo
 
 ### Backend
+
 - Go 1.21+
 - GraphQL (gqlgen)
 - CockroachDB
@@ -226,6 +250,7 @@ workspace/
 - Testing (testify)
 
 ### Frontend
+
 - Vue 3 (Composition API)
 - TypeScript
 - Pinia
@@ -235,6 +260,7 @@ workspace/
 - Vitest
 
 ### DevOps
+
 - Docker / Dev Containers
 - Hot reload (Air para Go, Vite para Vue)
 - CockroachDB en contenedor
@@ -244,12 +270,14 @@ workspace/
 ## 📚 Documentación
 
 ### Documentos Creados
+
 1. **PLAN_DE_ACCION.md**: Plan detallado por fases
 2. **docs/ARCHITECTURE.md**: Arquitectura DDD y flujos
 3. **docs/ALGORITHMS.md**: Algoritmos y optimizaciones
 4. **docs/RESUMEN_EJECUTIVO.md**: Este documento
 
 ### Documentación a Crear
+
 - Swagger/OpenAPI specs
 - GraphQL schema documentation
 - Storybook stories
@@ -280,6 +308,7 @@ workspace/
 ### Características Implementadas
 
 1. **Backend**:
+
    - Arquitectura DDD completa
    - GraphQL API con queries, mutations y filtros
    - Algoritmo de recomendación O(n log n)
@@ -289,6 +318,7 @@ workspace/
    - Tests unitarios (>50% cobertura)
 
 2. **Frontend**:
+
    - Design System completo con Storybook
    - HOCs (withLoading, withError, withPagination, withSearch)
    - Composables reutilizables
@@ -316,6 +346,7 @@ workspace/
 - **Formato**: JSON
 
 ### Estructura de Datos Esperada
+
 - TICKER
 - COMPANY
 - BROKERAGE

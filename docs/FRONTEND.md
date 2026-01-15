@@ -55,13 +55,11 @@ Los componentes están documentados en Storybook (http://localhost:6006):
 
 ```vue
 <script setup lang="ts">
-import { Button, Input, Table } from '@/design-system/components';
+import { Button, Input, Table } from "@/design-system/components";
 </script>
 
 <template>
-  <Button variant="primary" @click="handleClick">
-    Click me
-  </Button>
+  <Button variant="primary" @click="handleClick"> Click me </Button>
 </template>
 ```
 
@@ -79,7 +77,7 @@ Los tokens están en `src/design-system/tokens/`:
 El sistema soporta temas light y dark:
 
 ```typescript
-import { useThemeStore } from '@/stores/theme';
+import { useThemeStore } from "@/stores/theme";
 
 const themeStore = useThemeStore();
 themeStore.toggleTheme(); // Cambia entre light/dark
@@ -97,8 +95,8 @@ Muestra un spinner mientras carga:
 
 ```vue
 <script setup lang="ts">
-import StockList from './StockList.vue';
-import { withLoading } from '@/hoc/withLoading';
+import StockList from "./StockList.vue";
+import { withLoading } from "@/hoc/withLoading";
 
 const StockListWithLoading = withLoading(StockList);
 const loading = ref(false);
@@ -115,7 +113,7 @@ Maneja y muestra errores:
 
 ```vue
 <script setup lang="ts">
-import { withError } from '@/hoc/withError';
+import { withError } from "@/hoc/withError";
 
 const StockListWithError = withError(StockList);
 const error = ref<string | null>(null);
@@ -132,7 +130,7 @@ Agrega lógica de paginación:
 
 ```vue
 <script setup lang="ts">
-import { withPagination } from '@/hoc/withPagination';
+import { withPagination } from "@/hoc/withPagination";
 
 const StockListWithPagination = withPagination(StockList);
 </script>
@@ -152,7 +150,7 @@ Agrega búsqueda con debounce:
 
 ```vue
 <script setup lang="ts">
-import { withSearch } from '@/hoc/withSearch';
+import { withSearch } from "@/hoc/withSearch";
 
 const StockListWithSearch = withSearch(StockList);
 </script>
@@ -175,11 +173,11 @@ Los composables están en `src/composables/`:
 Lógica de acciones con cache:
 
 ```typescript
-import { useStock } from '@/composables/useStock';
+import { useStock } from "@/composables/useStock";
 
 const { stocks, loading, error, fetchStocks } = useStock();
 
-await fetchStocks({ ratings: ['Buy'] });
+await fetchStocks({ ratings: ["Buy"] });
 ```
 
 ### useApi
@@ -187,7 +185,7 @@ await fetchStocks({ ratings: ['Buy'] });
 Cliente GraphQL con cache:
 
 ```typescript
-import { useApi } from '@/composables/useApi';
+import { useApi } from "@/composables/useApi";
 
 const { query, loading, error } = useApi();
 
@@ -199,7 +197,7 @@ const result = await query(GET_STOCKS_QUERY, variables);
 Lógica de recomendaciones:
 
 ```typescript
-import { useRecommendations } from '@/composables/useRecommendations';
+import { useRecommendations } from "@/composables/useRecommendations";
 
 const { recommendations, loading, fetchRecommendations } = useRecommendations();
 
@@ -211,9 +209,9 @@ await fetchRecommendations(10);
 Debounce de valores:
 
 ```typescript
-import { useDebounce } from '@/composables/useDebounce';
+import { useDebounce } from "@/composables/useDebounce";
 
-const searchQuery = ref('');
+const searchQuery = ref("");
 const debouncedQuery = useDebounce(searchQuery, 300);
 ```
 
@@ -230,7 +228,7 @@ Los stores están en `src/stores/`:
 Maneja el tema (light/dark):
 
 ```typescript
-import { useThemeStore } from '@/stores/theme';
+import { useThemeStore } from "@/stores/theme";
 
 const themeStore = useThemeStore();
 themeStore.toggleTheme();
@@ -241,7 +239,7 @@ themeStore.toggleTheme();
 Maneja el estado de stocks:
 
 ```typescript
-import { useStockStore } from '@/stores/stock';
+import { useStockStore } from "@/stores/stock";
 
 const stockStore = useStockStore();
 await stockStore.fetchStocks(filter);
@@ -256,10 +254,10 @@ await stockStore.fetchStocks(filter);
 El cliente GraphQL está configurado en `src/utils/api.ts`:
 
 ```typescript
-import { graphqlClient, GET_STOCKS_QUERY } from '@/utils/api';
+import { graphqlClient, GET_STOCKS_QUERY } from "@/utils/api";
 
 const result = await graphqlClient.query(GET_STOCKS_QUERY, {
-  filter: { ratings: ['Buy'] },
+  filter: { ratings: ["Buy"] },
   limit: 50,
 });
 ```
@@ -289,7 +287,7 @@ El proyecto usa Tailwind CSS para estilos:
 Usar tokens cuando sea posible:
 
 ```typescript
-import { colors, spacing } from '@/design-system/tokens';
+import { colors, spacing } from "@/design-system/tokens";
 
 // En lugar de valores hardcodeados
 const style = {
@@ -311,11 +309,11 @@ Storybook está disponible en http://localhost:6006
 Crear `ComponentName.stories.ts`:
 
 ```typescript
-import type { Meta, StoryObj } from '@storybook/vue3';
-import MyComponent from './MyComponent.vue';
+import type { Meta, StoryObj } from "@storybook/vue3";
+import MyComponent from "./MyComponent.vue";
 
 const meta: Meta<typeof MyComponent> = {
-  title: 'Design System/MyComponent',
+  title: "Design System/MyComponent",
   component: MyComponent,
 };
 
@@ -324,7 +322,7 @@ type Story = StoryObj<typeof MyComponent>;
 
 export const Default: Story = {
   args: {
-    title: 'Mi Componente',
+    title: "Mi Componente",
   },
 };
 ```
@@ -374,7 +372,7 @@ Vite proporciona hot reload automático. Los cambios se reflejan instantáneamen
 Crear `src/composables/useMyComposable.ts`:
 
 ```typescript
-import { ref, computed } from 'vue';
+import { ref, computed } from "vue";
 
 export function useMyComposable() {
   const data = ref(null);
@@ -413,7 +411,7 @@ import {
   checkContrast,
   handleKeyboardNavigation,
   announceToScreenReader,
-} from '@/utils/accessibility';
+} from "@/utils/accessibility";
 ```
 
 ---

@@ -86,14 +86,14 @@ import (
 
 func TestDomainService_CalculatePriceChange(t *testing.T) {
     service := NewService()
-    
+
     stock := &Stock{
         TargetFrom: NewPrice(100.0),
         TargetTo:   NewPrice(120.0),
     }
-    
+
     change := service.CalculatePriceChange(stock)
-    
+
     assert.Equal(t, 20.0, change)
 }
 ```
@@ -115,18 +115,18 @@ func TestCockroachStockRepository_Save(t *testing.T) {
     db, mock, err := sqlmock.New()
     assert.NoError(t, err)
     defer db.Close()
-    
+
     repo := NewCockroachStockRepository(db)
-    
+
     mock.ExpectExec("INSERT INTO stocks").
         WithArgs("AAPL", "Apple Inc.", ...).
         WillReturnResult(sqlmock.NewResult(1, 1))
-    
+
     stock := &domain.Stock{
         Ticker:      "AAPL",
         CompanyName: "Apple Inc.",
     }
-    
+
     err = repo.Save(context.Background(), stock)
     assert.NoError(t, err)
     assert.NoError(t, mock.ExpectationsWereMet())
@@ -190,22 +190,22 @@ npm run test:coverage
 
 ```typescript
 // test/components/Button.test.ts
-import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
-import Button from '@/design-system/components/Button.vue';
+import { describe, it, expect } from "vitest";
+import { mount } from "@vue/test-utils";
+import Button from "@/design-system/components/Button.vue";
 
-describe('Button', () => {
-  it('renders correctly', () => {
+describe("Button", () => {
+  it("renders correctly", () => {
     const wrapper = mount(Button, {
-      props: { label: 'Click me' },
+      props: { label: "Click me" },
     });
-    expect(wrapper.text()).toContain('Click me');
+    expect(wrapper.text()).toContain("Click me");
   });
 
-  it('emits click event', async () => {
+  it("emits click event", async () => {
     const wrapper = mount(Button);
-    await wrapper.trigger('click');
-    expect(wrapper.emitted('click')).toBeTruthy();
+    await wrapper.trigger("click");
+    expect(wrapper.emitted("click")).toBeTruthy();
   });
 });
 ```
@@ -214,24 +214,24 @@ describe('Button', () => {
 
 ```typescript
 // test/stores/theme.test.ts
-import { describe, it, expect, beforeEach } from 'vitest';
-import { setActivePinia, createPinia } from 'pinia';
-import { useThemeStore } from '@/stores/theme';
+import { describe, it, expect, beforeEach } from "vitest";
+import { setActivePinia, createPinia } from "pinia";
+import { useThemeStore } from "@/stores/theme";
 
-describe('ThemeStore', () => {
+describe("ThemeStore", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
   });
 
-  it('initializes with light theme', () => {
+  it("initializes with light theme", () => {
     const store = useThemeStore();
-    expect(store.theme).toBe('light');
+    expect(store.theme).toBe("light");
   });
 
-  it('toggles theme', () => {
+  it("toggles theme", () => {
     const store = useThemeStore();
     store.toggleTheme();
-    expect(store.theme).toBe('dark');
+    expect(store.theme).toBe("dark");
   });
 });
 ```
@@ -240,22 +240,22 @@ describe('ThemeStore', () => {
 
 ```typescript
 // test/composables/useDebounce.test.ts
-import { describe, it, expect, vi } from 'vitest';
-import { ref } from 'vue';
-import { useDebounce } from '@/composables/useDebounce';
+import { describe, it, expect, vi } from "vitest";
+import { ref } from "vue";
+import { useDebounce } from "@/composables/useDebounce";
 
-describe('useDebounce', () => {
-  it('debounces value changes', async () => {
+describe("useDebounce", () => {
+  it("debounces value changes", async () => {
     vi.useFakeTimers();
-    const value = ref('');
+    const value = ref("");
     const debounced = useDebounce(value, 300);
 
-    value.value = 'a';
-    value.value = 'ab';
-    value.value = 'abc';
+    value.value = "a";
+    value.value = "ab";
+    value.value = "abc";
 
     vi.advanceTimersByTime(300);
-    expect(debounced.value).toBe('abc');
+    expect(debounced.value).toBe("abc");
     vi.useRealTimers();
   });
 });
@@ -265,24 +265,19 @@ describe('useDebounce', () => {
 
 ```typescript
 // vitest.config.ts
-import { defineConfig } from 'vitest/config';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig } from "vitest/config";
+import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
   plugins: [vue()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        '**/*.config.*',
-      ],
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules/", "src/test/", "**/*.d.ts", "**/*.config.*"],
     },
   },
 });
