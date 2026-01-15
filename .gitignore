@@ -31,3 +31,33 @@ Thumbs.db
 .env.development
 .env.production
 *.local
+
+# Go - Binarios compilados
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.a
+*.o
+
+# Go - Directorios de binarios y temporales
+/bin/
+/tmp/
+api/bin/
+api/tmp/
+
+# Go - Ejecutables específicos del proyecto
+api/main
+api/migrate
+
+# Go - Módulos y dependencias (vendor y workspace)
+/vendor/
+go.work
+go.work.sum
+
+# Go - Directorio .go (GOPATH personalizado o herramientas de Go)
+/.go/
+.go/

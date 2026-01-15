@@ -35,10 +35,14 @@
   },
   "workspaceFolder": "/workspace",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-  "forwardPorts": [3001, 8080, 26257],
+  "forwardPorts": [3001, 6006, 8080, 26257],
   "portsAttributes": {
     "3001": {
       "label": "Frontend (Vue 3)",
+      "onAutoForward": "notify"
+    },
+    "6006": {
+      "label": "Storybook",
       "onAutoForward": "notify"
     },
     "8080": {

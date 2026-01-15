@@ -34,9 +34,11 @@ Proyecto full-stack con backend en Golang y frontend en Vue 3.
 ## Stack Tecnológico
 
 ### Backend
+
 - **Golang** - Lenguaje de programación del servidor
 
 ### Frontend
+
 - **Vue 3** - Framework JavaScript progresivo
 - **TypeScript** - Superset tipado de JavaScript
 - **Pinia** - Store de estado para Vue
@@ -44,6 +46,7 @@ Proyecto full-stack con backend en Golang y frontend en Vue 3.
 - **Vite** - Build tool y dev server
 
 ### Base de Datos
+
 - **CockroachDB** - Base de datos distribuida
 
 ## Configuración del Entorno
@@ -77,6 +80,7 @@ make dev-down
 ```
 
 **Comandos disponibles:**
+
 - `make dev-init` - Inicializa el dev container (construye e inicia servicios) y abre el IDE
 - `make dev-up` - Inicia los servicios
 - `make dev-down` - Detiene los servicios
@@ -134,16 +138,20 @@ make dev-open  # Abre el IDE
 #### Abrir en IDE con Dev Container
 
 **Automáticamente (recomendado):**
+
 - Ejecuta `make dev-init` y el IDE se abrirá automáticamente
 - El IDE detectará el devcontainer y te preguntará si deseas abrirlo
 
 **Manualmente:**
+
 1. **Abrir en Dev Container:**
+
    - Abre Cursor o VS Code con la extensión "Dev Containers" instalada
    - Abre la carpeta del proyecto
    - Ejecuta el comando: `Dev Containers: Reopen in Container` (Cmd+Shift+P / Ctrl+Shift+P)
 
 2. **Servicios incluidos (se inician automáticamente):**
+
    - **API (Go)**: Puerto 8080 con hot reload (Air)
      - Se inicia automáticamente al abrir el devcontainer
      - Usa Air para recarga automática al modificar archivos Go
@@ -152,12 +160,17 @@ make dev-open  # Abre el IDE
      - Se inicia automáticamente al abrir el devcontainer
      - Usa Vite para recarga automática al modificar archivos Vue/TypeScript
      - Disponible en: `http://localhost:3001`
+   - **Storybook**: Puerto 6006
+     - Se inicia automáticamente junto con el frontend
+     - Documentación y pruebas de componentes
+     - Disponible en: `http://localhost:6006`
    - **CockroachDB**: Puerto 26257 (SQL) y 8081 (Web UI)
      - Se inicia automáticamente al abrir el devcontainer
      - Base de datos: `defaultdb`
      - Web UI disponible en: `http://localhost:8081`
 
 3. **Inicio automático de servicios:**
+
    - Todos los servicios se inician automáticamente cuando se abre el devcontainer
    - No es necesario ejecutar comandos manuales para iniciar los servicios
    - El script `postCreate.sh` se ejecuta automáticamente para instalar dependencias y configurar el entorno
@@ -169,6 +182,7 @@ make dev-open  # Abre el IDE
 ### Opción 2: Instalación Local
 
 #### Prerrequisitos
+
 - Node.js 18+ y npm
 - Go 1.21+
 - CockroachDB instalado localmente
@@ -176,25 +190,31 @@ make dev-open  # Abre el IDE
 #### Instalación
 
 1. **Instalar dependencias del frontend:**
+
 ```bash
 cd frontend
 npm install
 ```
 
 2. **Ejecutar el frontend en modo desarrollo:**
+
 ```bash
 npm run dev
 ```
+
 El frontend estará disponible en `http://localhost:3001`
 
 3. **Ejecutar el backend:**
+
 ```bash
 cd api
 go run cmd/main.go
 ```
+
 El backend estará disponible en `http://localhost:8080`
 
 4. **Iniciar CockroachDB:**
+
 ```bash
 # Instalar CockroachDB según tu sistema operativo
 # Luego iniciar en modo desarrollo:
@@ -254,12 +274,14 @@ Al abrir el devcontainer, todos los servicios se inician automáticamente:
 3. **Backend (Go API)**: Se inicia automáticamente con Air para hot-reload
 
 El script `postCreate.sh` se ejecuta automáticamente para:
+
 - Instalar herramientas de Go (gopls, delve, air)
 - Instalar dependencias del frontend (`npm install`)
 - Descargar módulos de Go (`go mod download`)
 - Esperar a que CockroachDB esté listo
 
 ### Puertos
+
 - **Frontend**: Puerto 3001 - `http://localhost:3001`
 - **Backend**: Puerto 8080 - `http://localhost:8080`
 - **CockroachDB SQL**: Puerto 26257
@@ -283,11 +305,13 @@ curl http://localhost:8080/hello
 ### Conexión a CockroachDB
 
 **Desde el devcontainer:**
+
 ```
 postgresql://root@cockroachdb:26257/defaultdb?sslmode=disable
 ```
 
 **Desde localhost:**
+
 ```
 postgresql://root@localhost:26257/defaultdb?sslmode=disable
 ```
@@ -324,11 +348,13 @@ docker logs <container-id-frontend>  # Reemplaza con el ID del contenedor
 ### Desarrollo del Sistema de Acciones
 
 1. **Revisar la documentación**:
+
    - Leer [Plan de Acción](./PLAN_DE_ACCION.md) para entender las fases
    - Revisar [Arquitectura](./docs/ARCHITECTURE.md) para entender la estructura DDD
    - Consultar [Algoritmos](./docs/ALGORITHMS.md) para entender las optimizaciones
 
 2. **Configurar el entorno**:
+
    - El devcontainer ya está configurado con todos los servicios
    - CockroachDB se inicia automáticamente
    - Backend y Frontend tienen hot reload
@@ -340,6 +366,7 @@ docker logs <container-id-frontend>  # Reemplaza con el ID del contenedor
 ### API Externa
 
 El sistema se conecta a:
+
 - **Endpoint**: `https://api.karenai.click/swechallenge/list`
 - **Auth**: Bearer token (ver documentación)
 - **Paginación**: Usar parámetro `next_page`
@@ -347,6 +374,7 @@ El sistema se conecta a:
 ## Características
 
 ### Sistema de Acciones
+
 - Sincronización automática desde API externa
 - Almacenamiento en CockroachDB
 - API GraphQL con queries y mutations
@@ -355,7 +383,9 @@ El sistema se conecta a:
 - Optimizaciones de performance (cache, debounce, etc.)
 
 ### Demo Actual
+
 El proyecto incluye una página demo que muestra:
+
 - Integración entre el frontend Vue 3 y el backend Go
 - Manejo de estado con Pinia
 - Diseño moderno con Tailwind CSS
@@ -369,20 +399,23 @@ El proyecto incluye una página demo que muestra:
 Si los servicios no se inician automáticamente al abrir el devcontainer:
 
 1. **Reconstruir el contenedor:**
+
    - Presiona `Ctrl+Shift+P` (o `Cmd+Shift+P` en Mac)
    - Ejecuta: `Dev Containers: Rebuild Container`
 
 2. **Verificar que los contenedores estén corriendo:**
+
    ```bash
    # Desde fuera del contenedor (en tu máquina local)
    docker-compose -f .devcontainer/docker-compose.yml ps
    ```
 
 3. **Iniciar servicios manualmente (si es necesario):**
+
    ```bash
    # Backend (normalmente ya está corriendo)
    cd /workspace/api && air -c .air.toml
-   
+
    # Frontend (normalmente ya está corriendo)
    cd /workspace/frontend && npm run dev
    ```
@@ -392,6 +425,7 @@ Si los servicios no se inician automáticamente al abrir el devcontainer:
 Si recibes un error de que el puerto está en uso:
 
 1. **Verificar qué proceso está usando el puerto:**
+
    ```bash
    # En Linux/Mac
    lsof -i :3001  # Para frontend
@@ -409,6 +443,7 @@ Si recibes un error de que el puerto está en uso:
 Si el backend tiene errores de compilación:
 
 1. **Verificar que las dependencias estén instaladas:**
+
    ```bash
    cd /workspace/api
    go mod download

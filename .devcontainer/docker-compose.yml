@@ -38,11 +38,14 @@ services:
       - ..:/workspace:cached
     working_dir: /workspace/frontend
     ports:
-      - "3001:3000" # Mapear puerto 3001 del host al 3000 del contenedor
-    command: ["npm", "run", "dev"]
+      - "127.0.0.1:3001:3000" # Mapear puerto 3001 del host al 3000 del contenedor (Vite)
+      - "127.0.0.1:6006:6006" # Mapear puerto 6006 del host al 6006 del contenedor (Storybook)
+    command: ["bash", "/workspace/.devcontainer/start-frontend.sh"]
     networks:
       - app-network
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   cockroachdb:
     image: cockroachdb/cockroach:latest-v23.1

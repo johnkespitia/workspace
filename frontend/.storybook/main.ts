@@ -21,6 +21,18 @@ const config: StorybookConfig = {
           '@': path.resolve(__dirname, '../src'),
         },
       },
+      server: {
+        host: '0.0.0.0', // Escuchar en todas las interfaces de red
+        port: 6006,
+        strictPort: true, // Fallar si el puerto está ocupado
+        hmr: {
+          host: 'localhost', // HMR desde el host usa localhost
+          clientPort: 6006, // Puerto del host para HMR (mismo que el del contenedor)
+        },
+        watch: {
+          usePolling: true, // Usar polling para detectar cambios en Docker
+        },
+      },
     });
   },
 };

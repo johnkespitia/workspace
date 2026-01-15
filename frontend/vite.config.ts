@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
       strictPort: true, // Fallar si el puerto está ocupado (para detectar problemas)
       hmr: {
         host: "localhost", // HMR desde el host usa localhost
-        clientPort: 3000, // Puerto para HMR (Hot Module Replacement)
+        clientPort: 3001, // Puerto del host para HMR (Hot Module Replacement)
       },
       watch: {
         usePolling: true, // Usar polling para detectar cambios en Docker

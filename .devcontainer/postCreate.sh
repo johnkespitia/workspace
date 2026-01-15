@@ -5,15 +5,54 @@ set +e
 echo "Running post-create tasks..."
 
 # Inicializar variables si no están definidas
-export GOPATH="${GOPATH:-/root/go}"
+# El GOPATH ya está definido en el Dockerfile, pero lo verificamos
+if [ -z "$GOPATH" ]; then
+    export GOPATH="${HOME:-/root}/go"
+fi
 export GOBIN="${GOBIN:-$GOPATH/bin}"
 export PATH="$GOBIN:$PATH"
 
-# Ensure GOPATH exists
-mkdir -p "$GOPATH/bin" || true
+# Ensure GOPATH exists con permisos correctos
+# Verificar si el directorio padre existe primero
+GOPATH_PARENT=$(dirname "$GOPATH")
+if [ ! -d "$GOPATH_PARENT" ]; then
+    mkdir -p "$GOPATH_PARENT" 2>/dev/null || {
+        echo "⚠️  Warning: No se pudo crear el directorio padre de GOPATH: $GOPATH_PARENT"
+        echo "   Usando /tmp/go como alternativa..."
+        export GOPATH="/tmp/go"
+        export GOBIN="$GOPATH/bin"
+    }
+fi
+
+# Crear el directorio GOPATH si no existe
+if [ ! -d "$GOPATH" ]; then
+    mkdir -p "$GOPATH/bin" 2>/dev/null || {
+        echo "⚠️  Warning: No se pudo crear GOPATH: $GOPATH"
+        echo "   Las herramientas de Go pueden no instalarse correctamente"
+    }
+else
+    mkdir -p "$GOPATH/bin" 2>/dev/null || true
+fi
+
+# Asegurar permisos correctos (solo si somos root o tenemos permisos)
+if [ "$(id -u)" = "0" ] || [ -w "$GOPATH" ]; then
+    chmod -R 755 "$GOPATH" 2>/dev/null || true
+fi
 
 echo "Installing Go language tools..."
 if command -v go >/dev/null 2>&1; then
+  # Verificar que GOPATH esté configurado y accesible
+  if [ -z "$GOPATH" ] || [ ! -w "$GOPATH" ] 2>/dev/null; then
+    echo "  ⚠️  Warning: GOPATH no está configurado o no es accesible"
+    echo "     Las herramientas de Go se instalarán en el directorio de trabajo actual"
+    export GOPATH="$(pwd)/.go"
+    export GOBIN="$GOPATH/bin"
+    mkdir -p "$GOPATH/bin" 2>/dev/null || true
+  fi
+  
+  echo "  GOPATH: $GOPATH"
+  echo "  GOBIN: $GOBIN"
+  
   echo "  Installing gopls..."
   go install golang.org/x/tools/gopls@latest 2>&1 || echo "    Warning: Failed to install gopls"
   echo "  Installing delve..."
@@ -88,6 +127,45 @@ else
 fi
 
 echo ""
+echo "Configuring Docker access..."
+if [ -S /var/run/docker.sock ]; then
+  # Detectar el GID del socket de Docker montado
+  DOCKER_SOCK_GID=$(stat -c '%g' /var/run/docker.sock 2>/dev/null || echo "")
+  
+  if [ -n "$DOCKER_SOCK_GID" ]; then
+    echo "  Docker socket GID: $DOCKER_SOCK_GID"
+    
+    # Verificar si existe un grupo con ese GID
+    EXISTING_GROUP=$(getent group "$DOCKER_SOCK_GID" | cut -d: -f1 2>/dev/null || echo "")
+    
+    if [ -n "$EXISTING_GROUP" ]; then
+      echo "  Using existing group: $EXISTING_GROUP (GID: $DOCKER_SOCK_GID)"
+      DOCKER_GROUP="$EXISTING_GROUP"
+    else
+      # Crear el grupo docker con el GID del socket
+      DOCKER_GROUP="docker"
+      if ! getent group "$DOCKER_GROUP" >/dev/null 2>&1; then
+        groupadd -g "$DOCKER_SOCK_GID" "$DOCKER_GROUP" 2>/dev/null || {
+          echo "  ⚠️  Warning: Could not create docker group with GID $DOCKER_SOCK_GID"
+          echo "     Trying with default GID..."
+          groupadd "$DOCKER_GROUP" 2>/dev/null || true
+        }
+      fi
+    fi
+    
+    # Agregar usuarios al grupo docker
+    CURRENT_USER=$(whoami)
+    if [ "$CURRENT_USER" != "root" ]; then
+      usermod -aG "$DOCKER_GROUP" "$CURRENT_USER" 2>/dev/null || true
+    fi
+    usermod -aG "$DOCKER_GROUP" root 2>/dev/null || true
+    usermod -aG "$DOCKER_GROUP" vscode 2>/dev/null || true
+    
+    echo "  ✅ Added users to $DOCKER_GROUP group"
+    echo "  ⚠️  Note: You may need to restart the container or run 'newgrp docker' for changes to take effect"
+  fi
+fi
+
 echo "Verifying Docker access..."
 if command -v docker >/dev/null 2>&1; then
   if docker ps >/dev/null 2>&1; then
@@ -101,7 +179,9 @@ if command -v docker >/dev/null 2>&1; then
     fi
   else
     echo "⚠️  Docker command found but cannot access Docker daemon"
-    echo "   This is normal if Docker socket is not mounted"
+    echo "   Socket permissions: $(ls -l /var/run/docker.sock 2>/dev/null || echo 'not found')"
+    echo "   Current user groups: $(groups)"
+    echo "   ⚠️  You may need to restart the container or run 'newgrp docker' for changes to take effect"
   fi
 else
   echo "⚠️  Docker CLI not found in container"

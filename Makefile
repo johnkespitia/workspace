@@ -1,4 +1,4 @@
-.PHONY: help dev-init dev-up dev-down dev-rebuild dev-logs dev-clean dev-shell dev-status dev-open dev-diagnose dev-install-frontend
+.PHONY: help dev-init dev-up dev-down dev-rebuild dev-logs dev-clean dev-shell dev-status dev-open dev-diagnose dev-install-frontend dev-diagnose-frontend dev-health
 
 # Variables
 COMPOSE_FILE := .devcontainer/docker-compose.yml
@@ -40,6 +40,7 @@ dev-up: ## Inicia los servicios del dev container
 	@cd $(DEV_CONTAINER_DIR) && sh -c "$(DOCKER_COMPOSE_CMD) -p $(PROJECT_NAME) -f docker-compose.yml up -d"
 	@echo "$(GREEN)✅ Servicios iniciados$(NC)"
 	@echo "$(YELLOW)Frontend: http://localhost:3001$(NC)"
+	@echo "$(YELLOW)Storybook: http://localhost:6006$(NC)"
 	@echo "$(YELLOW)Backend: http://localhost:8080$(NC)"
 	@echo "$(YELLOW)CockroachDB UI: http://localhost:8081$(NC)"
 
@@ -75,6 +76,7 @@ dev-status: ## Muestra el estado de los servicios
 	@echo ""
 	@echo "$(YELLOW)Puertos expuestos:$(NC)"
 	@echo "  Frontend:    http://localhost:3001"
+	@echo "  Storybook:   http://localhost:6006"
 	@echo "  Backend:     http://localhost:8080"
 	@echo "  CockroachDB: http://localhost:8081 (Web UI)"
 	@echo "  CockroachDB: localhost:26257 (SQL)"
@@ -126,12 +128,81 @@ dev-health: ## Verifica el estado de salud de los servicios
 		echo "$(RED)❌ Frontend no responde$(NC)"; \
 	fi
 	@echo ""
+	@echo "$(YELLOW)Storybook:$(NC)"
+	@if curl -s -f --max-time 5 -o /dev/null http://localhost:6006 >/dev/null 2>&1; then \
+		HTTP_CODE=$$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:6006 2>/dev/null || echo "000"); \
+		if [ "$$HTTP_CODE" != "000" ] && [ "$$HTTP_CODE" != "" ]; then \
+			echo "$(GREEN)✅ Storybook responde (HTTP $$HTTP_CODE)$(NC)"; \
+		else \
+			echo "$(RED)❌ Storybook no responde$(NC)"; \
+		fi; \
+	else \
+		echo "$(RED)❌ Storybook no responde$(NC)"; \
+	fi
+	@echo ""
 	@echo "$(YELLOW)CockroachDB:$(NC)"
 	@if cd $(DEV_CONTAINER_DIR) && $(DOCKER_COMPOSE_CMD) -p $(PROJECT_NAME) -f docker-compose.yml exec -T cockroachdb curl -s -f --max-time 5 http://localhost:8080/health >/dev/null 2>&1; then \
 		echo "$(GREEN)✅ CockroachDB responde correctamente$(NC)"; \
 	else \
 		echo "$(RED)❌ CockroachDB no responde$(NC)"; \
 	fi
+
+dev-diagnose-frontend: ## Diagnostica problemas del frontend
+	@echo "$(GREEN)🔍 Diagnóstico del Frontend...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)1. Estado del contenedor:$(NC)"
+	@cd $(DEV_CONTAINER_DIR) && sh -c "$(DOCKER_COMPOSE_CMD) -p $(PROJECT_NAME) -f docker-compose.yml ps frontend" || echo "$(RED)❌ Contenedor frontend no encontrado$(NC)"
+	@echo ""
+	@echo "$(YELLOW)2. Últimos logs del frontend:$(NC)"
+	@cd $(DEV_CONTAINER_DIR) && sh -c "$(DOCKER_COMPOSE_CMD) -p $(PROJECT_NAME) -f docker-compose.yml logs --tail=50 frontend" || echo "$(RED)❌ No se pudieron obtener logs$(NC)"
+	@echo ""
+	@echo "$(YELLOW)3. Verificando puertos en el host:$(NC)"
+	@if lsof -i :3001 >/dev/null 2>&1 || netstat -an 2>/dev/null | grep -q ":3001.*LISTEN" || ss -tlnp 2>/dev/null | grep -q ":3001"; then \
+		echo "$(GREEN)✅ Puerto 3001 está en uso$(NC)"; \
+	else \
+		echo "$(RED)❌ Puerto 3001 NO está en uso$(NC)"; \
+	fi
+	@if lsof -i :6006 >/dev/null 2>&1 || netstat -an 2>/dev/null | grep -q ":6006.*LISTEN" || ss -tlnp 2>/dev/null | grep -q ":6006"; then \
+		echo "$(GREEN)✅ Puerto 6006 está en uso$(NC)"; \
+	else \
+		echo "$(RED)❌ Puerto 6006 NO está en uso$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)4. Ejecutando diagnóstico dentro del contenedor:$(NC)"
+	@cd $(DEV_CONTAINER_DIR) && sh -c "$(DOCKER_COMPOSE_CMD) -p $(PROJECT_NAME) -f docker-compose.yml exec -T frontend bash /workspace/.devcontainer/diagnose-frontend.sh" 2>/dev/null || echo "$(RED)❌ No se pudo ejecutar diagnóstico dentro del contenedor$(NC)"
+	@echo ""
+	@echo "$(YELLOW)5. Verificando conectividad desde el host:$(NC)"
+	@echo "   Probando Frontend (http://localhost:3001)..."
+	@HTTP_CODE=$$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:3001 2>/dev/null || echo "000"); \
+	if [ "$$HTTP_CODE" = "000" ]; then \
+		echo "   $(RED)❌ No se puede conectar (timeout o conexión rechazada)$(NC)"; \
+		echo "   $(YELLOW)   Verificando si el puerto está realmente escuchando...$(NC)"; \
+		if command -v lsof >/dev/null 2>&1; then \
+			lsof -i :3001 2>/dev/null | head -3 || echo "   $(RED)   No se encontró proceso escuchando en 3001$(NC)"; \
+		fi; \
+	else \
+		echo "   $(GREEN)✅ Frontend responde (HTTP $$HTTP_CODE)$(NC)"; \
+	fi
+	@echo "   Probando Storybook (http://localhost:6006)..."
+	@HTTP_CODE=$$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://localhost:6006 2>/dev/null || echo "000"); \
+	if [ "$$HTTP_CODE" = "000" ]; then \
+		echo "   $(RED)❌ No se puede conectar (timeout o conexión rechazada)$(NC)"; \
+		echo "   $(YELLOW)   Verificando si el puerto está realmente escuchando...$(NC)"; \
+		if command -v lsof >/dev/null 2>&1; then \
+			lsof -i :6006 2>/dev/null | head -3 || echo "   $(RED)   No se encontró proceso escuchando en 6006$(NC)"; \
+		fi; \
+	else \
+		echo "   $(GREEN)✅ Storybook responde (HTTP $$HTTP_CODE)$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)6. Información de red del contenedor:$(NC)"
+	@cd $(DEV_CONTAINER_DIR) && sh -c "$(DOCKER_COMPOSE_CMD) -p $(PROJECT_NAME) -f docker-compose.yml exec -T frontend hostname -I 2>/dev/null" || echo "   No se pudo obtener la IP del contenedor"
+	@echo ""
+	@echo "$(YELLOW)💡 Si los servicios están corriendo pero no son accesibles:$(NC)"
+	@echo "   1. Verifica que no haya un firewall bloqueando los puertos"
+	@echo "   2. Intenta acceder desde otro navegador o modo incógnito"
+	@echo "   3. Verifica que Docker Desktop tenga los puertos expuestos"
+	@echo "   4. Intenta reiniciar Docker Desktop"
 
 dev-open: ## Abre el IDE (Cursor o VS Code) con el devcontainer
 	@echo "$(BLUE)💻 Abriendo IDE...$(NC)"
